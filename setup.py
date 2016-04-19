@@ -28,7 +28,7 @@ setup(
     name="cycgkit",
     packages=["cycgkit"],
     ext_modules=cythonize([
-        Extension('cycgkit/cgtypes', ["cycgkit/cgtypes.pyx", './src/vec3.cpp'],
+        Extension('cycgkit/cgtypes/*', ["cycgkit/cgtypes/*.pyx", './src/vec3.cpp'],
                   # libraries=["__"],
                   include_dirs=incl,
                   runtime_library_dirs=rldirs,

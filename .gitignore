@@ -2,6 +2,6 @@
 
 .idea/
 build/
-/cycgkit/*.so
-/cycgkit/*.cpp
+/cycgkit/cgtypes/*.so
+/cycgkit/cgtypes/*.cpp
 /overrides_test.py

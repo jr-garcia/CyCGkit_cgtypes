@@ -235,3 +235,8 @@ cdef class vec3:
         cdef float r_ = 0, theta_ = 0, phi_ = 0
         self.cvec.get_polar(r_, theta_, phi_)
         return r_, theta_, phi_
+
+cdef class vec4(vec3):
+    def __cinit__(self, *args):
+        super(vec4, self).__init__(args)
+
