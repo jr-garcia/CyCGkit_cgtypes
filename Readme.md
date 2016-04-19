@@ -5,7 +5,7 @@ Graphics Kit 2__](http://cgkit.sourceforge.net/).
 
 ### About the license:
 This work is distributed under the [MIT license](https://opensource.org/licenses/MIT). However, CGKit is under 
-different licenses. We include the CGkit source code under the [MPL license](https://www.mozilla.org/en-US/MPL/2.0/) 
+different licenses. We include the CGkit source code under the [MPL license](https://www.mozilla.org/en-US/MPL/) 
 and you can also download a copy of the same source code from http://cgkit.sourceforge.net/download.html
 
 Please read respective licenses for more info about your rights.
@@ -29,7 +29,8 @@ engine needs those in the future).
  - vec3 (complete)
  
 #### Contributions:
-If that ever happens, contributed code should be released under MIT or compatible license in order to be mergeable with this repo.
+If that ever happens, contributed code should be released under MIT or compatible license in order to be mergeable 
+with this repo.
 
 
 
