@@ -1,5 +1,3 @@
-#from common_exceptions cimport *
-
 ctypedef bint bool
 
 cdef extern from "vec3.h" namespace 'support3d' nogil:
