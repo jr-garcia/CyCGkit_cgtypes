@@ -2,7 +2,7 @@
 
 ctypedef bint bool
 
-cdef extern from "vec3.h" namespace 'support3d':
+cdef extern from "vec3.h" namespace 'support3d' nogil:
     cdef cppclass vec3[T]:
         T x
         T y

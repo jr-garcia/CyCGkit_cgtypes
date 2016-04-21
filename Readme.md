@@ -27,6 +27,7 @@ engine needs those in the future).
 
 #### Currently working:
  - vec3 (complete)
+ - vec4 (complete)
  
 #### Contributions:
 If that ever happens, contributed code should be released under MIT or compatible license in order to be mergeable 
