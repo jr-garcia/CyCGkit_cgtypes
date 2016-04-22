@@ -25,7 +25,7 @@ if hasNumpy:
 
 print('Repr and index[0]')
 print(v)
-print(v[0])
+print(v[:2])
 print('Prop x')
 print(v.x)
 

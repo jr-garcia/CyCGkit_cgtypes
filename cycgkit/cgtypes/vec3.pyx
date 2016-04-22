@@ -125,8 +125,10 @@ cdef class vec3:
     def __len__(vec3 self):
         return self.items
 
-    def __getitem__(self, int index):
-        if index > self.items - 1:
+    def __getitem__(self, object index):
+        if type(index) not in (int, slice, tupple):
+            raise TypeError('an integer is required')
+        if type(index) is int and index > self.items - 1:
             raise IndexError
         return self.cvec[index]
 
