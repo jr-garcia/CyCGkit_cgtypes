@@ -10,7 +10,7 @@ cdef extern from "mat3.h" namespace 'support3d' nogil:
         mat3(T a, T b, T c,  T d, T e, T f,  T g, T h, T i)
         mat3(const mat3[T]& A)
 
-        T& at(short i, short j)
+        #T& at(short i, short j)
         const T& at(short i, short j) const
 
         # set_ and get_ methods
@@ -74,7 +74,7 @@ cdef extern from "mat3.h" namespace 'support3d' nogil:
         bool operator==(const mat3[T]& A) const     # matrix == matrix
         bool operator!=(const mat3[T]& A) const     # matrix == matrix
 
-        void toList(T* dest, bool rowmajor=false) const
+        #void toList(T* dest, bool rowmajor=false) const
 
         # determinant
         T determinant() const

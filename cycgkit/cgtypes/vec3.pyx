@@ -3,7 +3,7 @@ cimport cvec3 as v3
 
 cdef class vec3:
     def __cinit__(self, *args):
-        cdef float x, y, z
+        cdef double x, y, z
         cdef list argsl
         self.items = 3
         if args.__len__() == 0:
@@ -36,10 +36,10 @@ cdef class vec3:
 
     def __mul__(vec3 self, other):
         cdef vec3_f res
-        cdef float res2
+        cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec3_f&>self.cvec * (<float>other)
+            res = <vec3_f&>self.cvec * (<double>other)
             return vec3(res[0], res[1], res[2])
         elif otype == vec3:
             res2 = <vec3_f&>self.cvec * (<vec3_f&>(<vec3>other).cvec)
@@ -56,7 +56,7 @@ cdef class vec3:
             if other == 0:
                 raise ZeroDivisionError("can't divide by 0")
             else:
-                res = (<vec3_f&>(<vec3>self).cvec) / (<const float>other)
+                res = (<vec3_f&>(<vec3>self).cvec) / (<const double>other)
                 return vec3(res[0], res[1], res[2])
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec3, otype))
@@ -76,7 +76,7 @@ cdef class vec3:
         cdef vec3_f res
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec3_f&>self.cvec % (<float>other)
+            res = <vec3_f&>self.cvec % (<double>other)
         elif otype == vec3:
             res = <vec3_f&>self.cvec % (<vec3_f&>(<vec3>other).cvec)
         else:
@@ -126,11 +126,43 @@ cdef class vec3:
         return self.items
 
     def __getitem__(self, object index):
-        if type(index) not in (int, slice, tupple):
+        cdef type otype = type(index)
+        if otype is int:
+            if index > self.items - 1:
+                raise IndexError(index)
+            else:
+                return self.cvec[index]
+        elif otype is slice:
+            return [self.cvec.x, self.cvec.y, self.cvec.z][index]
+        else:
             raise TypeError('an integer is required')
-        if type(index) is int and index > self.items - 1:
-            raise IndexError
-        return self.cvec[index]
+
+    def __setitem__(vec3 self, object key, double value):
+        cdef type otype = type(key)
+        cdef list its = []
+        cdef object val
+        if otype is int:
+            if key > self.items - 1:
+                raise IndexError(key)
+            else:
+                its.append(key)
+        elif otype is slice:
+            for r in range(key.start, key.stop, key.step if key.step is not None else 1):
+                its.append(r)
+        elif otype == tuple:
+            for r in key:
+                its.append(r)
+        else:
+            raise TypeError('an integer is required')
+        for r in its:
+            if r == 0:
+                self.cvec.x = value
+            elif r == 1:
+                self.cvec.y = value
+            elif r == 2:
+                self.cvec.z = value
+            else:
+                raise IndexError(r)
 
     def __repr__(self):
         return '[{}, {}, {}]'.format(self.cvec.x, self.cvec.y, self.cvec.z)
@@ -196,7 +228,7 @@ cdef class vec3:
     def reflect(vec3 self, vec3 other):
         return vec3.from_cvec(self.cvec.reflect(other.cvec))
 
-    def refract(vec3 self, vec3 other, float eta):
+    def refract(vec3 self, vec3 other, double eta):
         return vec3.from_cvec(self.cvec.refract(other.cvec, eta))
 
     def max(self):
@@ -231,11 +263,11 @@ cdef class vec3:
         '''Return index with minimum absolute value'''
         return self.cvec.minAbsIndex()
 
-    def set_polar(self, const float r, const float theta, const float phi):
+    def set_polar(self, const double r, const double theta, const double phi):
         self.cvec.set_polar(r, theta, phi)
 
     def get_polar(self):
         '''Get r, theta, phi tuple'''
-        cdef float r_ = 0, theta_ = 0, phi_ = 0
+        cdef double r_ = 0, theta_ = 0, phi_ = 0
         self.cvec.get_polar(r_, theta_, phi_)
         return r_, theta_, phi_

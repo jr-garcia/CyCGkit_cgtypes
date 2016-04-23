@@ -1,17 +1,19 @@
 try:
     from ExtensionBuilder import build
+
     build('./')
 except ImportError as ie:
     print(str(ie) + ' Used for simpler building of source while testing. Currently unreleased.')
 
 hasNumpy = False
 try:
-    from numpy import array
+    from numpy import array, asarray
+
     hasNumpy = True
 except ImportError:
     pass
 
-print('###################################   VEC 3   ###################################')
+print('\n###################################   VEC 3   ###################################')
 from cycgkit.cgtypes import vec3
 
 v = vec3(9, 2, 5)
@@ -25,7 +27,8 @@ if hasNumpy:
 
 print('Repr and index[0]')
 print(v)
-print(v[:2])
+print(v[0])
+print('slice [:2]', v[:2])
 print('Prop x')
 print(v.x)
 
@@ -90,11 +93,11 @@ print('get polar (r, theta, phi):', (r, theta, phi))
 v.set_polar(0.2, 0, 0)
 print('set polar:', v)
 print('vec3 memory size:', v.__sizeof__())
-print('cgckit c-vec3 memory size: {} (3 floats of size 4 each)'.format(v.cSize))
+print('cgckit c-vec3 memory size: {} (3 doubles of size 8 each)'.format(v.cSize))
 
+print('\n###################################   VEC 4   ###################################')
 from cycgkit.cgtypes import vec4
 
-print('###################################   VEC 4   ###################################')
 v = vec4(9, 2, 5, 10)
 x, y, z, w = v
 print(x, y, z, w)
@@ -171,4 +174,126 @@ print(v.minIndex())
 # v.set_polar(0.2, 0, 0)
 # print('set polar:', v)
 print('vec4 memory size:', v.__sizeof__())
-print('cgckit c-vec4 memory size: {} (4 floats of size 4 each)'.format(v.cSize))
+print('cgckit c-vec4 memory size: {} (4 doubles of size 8 each)'.format(v.cSize))
+
+print('\n###################################   MAT 3   ###################################')
+from cycgkit.cgtypes import mat3
+
+m = mat3([0, 1, 2])
+print(m)
+m = mat3(vec3(0, 1, 2), vec3(3, 4, 5), vec3(6, 7, 8))
+print('from 3 vec3:\n', m)
+r0, r1, r2 = m
+m = mat3(x)
+m = mat3([x] * 9)
+m = mat3([45, 45, 45], [45, 45, 45], [153, 153, 153])
+print(m)
+'''
+(45, 45, 153)
+(45, 45, 153)
+(45, 45, 153)
+
+'''
+m = mat3(m)
+
+print('__repr__ and index[0]:\n{}\n'.format(m))
+print(m[0])
+
+if hasNumpy:
+    arr = asarray(m)
+    print('numpy.asarray (__getbuffer__):\n', arr)
+    arr[0:2] = 3.0
+    print('modified from numpy:\n', m)
+    m = mat3(arr)
+    arr = None
+
+print('multiply')
+print(m * 453, '\n')
+print(m * 3.0, '\n')
+# print(3 * m, '\n')
+print(m * vec3(3), '\n')  # (27, 27, 81)
+print(vec3(3) * m, '\n')  # (45, 45, 45)
+print('Dot product:\n', m * m)
+try:
+    print(m * 'g')
+except TypeError as t:
+    print(t)
+
+print('Divide', m)
+print(m / 53.0, '\n')
+print(m / 3)
+try:
+    print(3 / m)
+except TypeError as t:
+    print('Exception \'{}\''.format(t))
+try:
+    m / 0
+except ZeroDivisionError as t:
+    print('Divide by 0: Exception \'{}\''.format(t))
+try:
+    print('divide', m / m)
+except TypeError as t:
+    print('Exception \'{}\''.format(t))
+
+print('modulo %')
+print(m % m, '\n')
+print(m % 2)
+print('add:', m + m)
+print('substract:', m - m)
+print('negate:', -m)
+print('equals (true): ', m == m)
+print('equals (false): ', m == mat3(2))
+print('not equal (false): ', m != m)
+print('not equal (true): ', m != mat3(2))
+try:
+    m > mat3(1)
+except TypeError as ex:
+    print('greater (exception):', ex)
+# print('ortho:', m.ortho())
+print('mat3 memory size:', m.__sizeof__())
+print('cgckit c-mat3 memory size: {} (9 doubles of size 8 each)'.format(m.cSize))
+print('set [0:3:2] = [-3.0, -3.0, -3.0]:')
+m[0:3:2] = vec3(-3)
+print(m)
+print('set [1, 2] = [-11.0, -11.0, -11.0]:')
+m[1, 2] = vec3(-11)
+print(m)
+print('set [1, 2] = 12.0:')
+m[1, 2] = -12
+print(m)
+if hasNumpy:
+    try:
+        arr = asarray(m)
+        m[2] = vec3(0)
+    except ValueError as ex:
+        print('Exception if changing while viewed:', ex)
+    finally:
+        arr = None
+
+m.setIdentity()
+print('identity:\n{}'.format(m))
+print('getRow 0 / setRow 0:')
+vec = vec3()
+m.getRow(0, vec)
+vec[0, 2] = 4
+m.setRow(0, vec)
+print(m)
+print('get row 0 as (a, b, c):', m.getRow(0))
+
+print('getColumn 2 / setColumn 2:')
+vec = vec3()
+m.getColumn(2, vec)
+vec[0, 2] = -6
+m.setColumn(2, vec)
+print(m)
+print('get Column 2 as (a, b, c):', m.getColumn(2))
+
+print('getDiag / setDiag:')
+vec = vec3()
+m.getDiag(vec)
+vec[2] = 5.077
+m.setDiag(vec)
+print(m)
+print('get Diag as (a, b, c):', m.getDiag())
+print('Get value \'at\' [2,0]:', m.at(2, 0))
+print(m[2, 0])

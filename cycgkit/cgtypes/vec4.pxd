@@ -6,7 +6,7 @@ ctypedef v4.vec4[float] vec4_f
 
 cdef class vec4:
     cdef vec4_f cvec
-    cdef int items
+    cdef unsigned short items
 
     @staticmethod
     cdef vec4 from_cvec(vec4_f cvec)

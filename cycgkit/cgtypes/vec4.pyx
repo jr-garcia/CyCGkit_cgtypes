@@ -4,7 +4,7 @@ cimport cvec4 as v4
 
 cdef class vec4:
     def __cinit__(self, *args):
-        cdef float x, y, z, w
+        cdef double x, y, z, w
         cdef list argsl
         self.items = 4
         if args.__len__() == 0:
@@ -38,10 +38,10 @@ cdef class vec4:
 
     def __mul__(vec4 self, other):
         cdef vec4_f res
-        cdef float res2
+        cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec4_f&>self.cvec * (<float>other)
+            res = <vec4_f&>self.cvec * (<double>other)
             return vec4(res[0], res[1], res[2], res[3])
         elif otype == vec4:
             res2 = <vec4_f&>self.cvec * (<vec4_f&>(<vec4>other).cvec)
@@ -58,7 +58,7 @@ cdef class vec4:
             if other == 0:
                 raise ZeroDivisionError("can't divide by 0")
             else:
-                res = (<vec4_f&>(<vec4>self).cvec) / (<const float>other)
+                res = (<vec4_f&>(<vec4>self).cvec) / (<const double>other)
                 return vec4(res[0], res[1], res[2], res[3])
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec4, otype))
@@ -78,7 +78,7 @@ cdef class vec4:
         cdef vec4_f res
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec4_f&>self.cvec % (<float>other)
+            res = <vec4_f&>self.cvec % (<double>other)
         elif otype == vec4:
             res = <vec4_f&>self.cvec % (<vec4_f&>(<vec4>other).cvec)
         else:
@@ -127,10 +127,46 @@ cdef class vec4:
     def __len__(vec4 self):
         return self.items
 
-    def __getitem__(self, int index):
-        if index > self.items - 1:
-            raise IndexError
-        return self.cvec[index]
+    def __getitem__(self, object index):
+        cdef type otype = type(index)
+        if otype is int:
+            if index > self.items - 1:
+                raise IndexError(index)
+            else:
+                return self.cvec[index]
+        elif otype is slice:
+            return [self.cvec.x, self.cvec.y, self.cvec.z][index]
+        else:
+            raise TypeError('an integer is required')
+
+    def __setitem__(vec4 self, object key, double value):
+        cdef type otype = type(key)
+        cdef list its = []
+        cdef object val
+        if otype is int:
+            if key > self.items - 1:
+                raise IndexError(key)
+            else:
+                its.append(key)
+        elif otype is slice:
+            for r in range(key.start, key.stop, key.step if key.step is not None else 1):
+                its.append(r)
+        elif otype == tuple:
+            for r in key:
+                its.append(r)
+        else:
+            raise TypeError('an integer is required')
+        for r in its:
+            if r == 0:
+                self.cvec.x = value
+            elif r == 1:
+                self.cvec.y = value
+            elif r == 2:
+                self.cvec.z = value
+            elif r == 3:
+                self.cvec.w = value
+            else:
+                raise IndexError(r)
 
     def __repr__(self):
         return '[{}, {}, {}, {}]'.format(self.cvec.x, self.cvec.y, self.cvec.z, self.cvec.w)
