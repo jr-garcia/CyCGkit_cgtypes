@@ -12,7 +12,7 @@ cdef class vec4:
             return
 
         if getattr(args[0], '__getitem__', None):
-            if str(type(args[0])) == "<class 'numpy.ndarray'>" and args[0].ndim > 1:
+            if 'numpy.ndarray' in str(type(args[0])) and args[0].ndim > 1:
                 raise TypeError('for vectors, Numpy arrays should be 1-D')
             argsl = list(args[0])
         else:
@@ -62,6 +62,9 @@ cdef class vec4:
                 return vec4(res[0], res[1], res[2], res[3])
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec4, otype))
+
+    def __div__(self, other not None):
+        return self.__truediv__(other)
 
     # def __xor__(vec4 self, other not None):
     #     """ Return self^value. """
@@ -169,7 +172,16 @@ cdef class vec4:
                 raise IndexError(r)
 
     def __repr__(self):
-        return '[{}, {}, {}, {}]'.format(self.cvec.x, self.cvec.y, self.cvec.z, self.cvec.w)
+        cdef double xf = round(self.cvec.x, 3)
+        cdef double yf = round(self.cvec.y, 3)
+        cdef double zf = round(self.cvec.z, 3)
+        cdef double wf = round(self.cvec.w, 3)
+        cdef object x, y, z, w
+        x = int(xf) if int(xf) == round(xf, 3) else round(xf, 3)
+        y = int(yf) if int(yf) == round(yf, 3) else round(yf, 3)
+        z = int(zf) if int(zf) == round(zf, 3) else round(zf, 3)
+        w = int(wf) if int(wf) == round(wf, 3) else round(wf, 3)
+        return '({}, {}, {})'.format(x, y, z, w)
 
     def __sizeof__(self):
         return sizeof(vec4)

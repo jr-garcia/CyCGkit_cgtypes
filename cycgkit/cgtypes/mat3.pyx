@@ -19,14 +19,15 @@ cdef class mat3:
         self.items = 9
         self.ncols = 3
         self.nrows = 3
-        print('entry:',otype)
+        self.isTransposed = False
+
         if argLen == 0:
             # no arguments
             self.cvec = mat3_f()
         elif otype is mat3:
             # copy from mat3
             self.cvec = (<mat3>args[0]).cvec
-        elif str(otype) == "<class 'numpy.ndarray'>":
+        elif 'numpy.ndarray' in str(otype):
             # from numpy array
             if args[0].ndim == 2:
                 self.cvec = mat3.from_3iterable_of3([args[0][0], args[0][1], args[0][2]])
@@ -38,12 +39,12 @@ cdef class mat3:
                 # 1 vec
                 self.cvec = mat3_f()
                 for r in range(3):
-                    self.cvec.setRow(r, (<vec3>args[0]).cvec)
+                    self.cvec.setColumn(r, (<vec3>args[0]).cvec)
             elif argLen == 3:
                 # 3 vecs
                 self.cvec = mat3_f()
                 for r in range(3):
-                    self.cvec.setRow(r, (<vec3>args[r]).cvec)
+                    self.cvec.setColumn(r, (<vec3>args[r]).cvec)
             else:
                 raise TypeError('Wrong number of arguments. Expected {} got {}'.format(self.nrows, len(args)))
         elif argLen == self.items:
@@ -67,7 +68,6 @@ cdef class mat3:
                 self.cvec = mat3_f(<double>args[0])
         elif argLen == 1 and otype is list:
             # from list with unknown stuff inside
-            print('list')
             self.cvec = mat3(*args[0]).cvec
         else:
             raise TypeError('Wrong number/type of arguments. Expected one of the following:\n{}\ngot {} {}'.format(
@@ -77,14 +77,14 @@ cdef class mat3:
     cdef mat3_f from_1iterable_of3(object it3):
         cdef mat3_f tcvec = mat3_f()
         for r in range(3):
-            tcvec.setRow(r, vec3_f(it3[0], it3[1], it3[2]))
+            tcvec.setColumn(r, vec3_f(it3[0], it3[1], it3[2]))
         return tcvec
 
     @staticmethod
     cdef mat3_f from_3iterable_of3(object it3):
         cdef mat3_f tcvec = mat3_f()
         for r in range(3):
-            tcvec.setRow(r, vec3_f(it3[r][0], it3[r][1], it3[r][2]))
+            tcvec.setColumn(r, vec3_f(it3[r][0], it3[r][1], it3[r][2]))
         return tcvec
 
     @staticmethod
@@ -127,6 +127,9 @@ cdef class mat3:
                 return mat3.from_cvec(res)
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(mat3, otype))
+
+    def __div__(self, other not None):
+        return self.__truediv__(other)
 
     def __mod__(mat3 self, other not None):
         """ Return self%value. """
@@ -183,9 +186,9 @@ cdef class mat3:
         raise TypeError('operator \'{}\' not defined for {}'.format(op, mat3))
 
     def tolist(self, rowMajor=False):
-        cdef list tl = [None, None, None]
+        cdef list tl
         cdef vec3_f r0, r1, r2
-        if not rowMajor:
+        if rowMajor:
             r0 = self.cvec.getRow(0)
             r1 = self.cvec.getRow(1)
             r2 = self.cvec.getRow(2)
@@ -194,9 +197,7 @@ cdef class mat3:
             r1 = self.cvec.getColumn(1)
             r2 = self.cvec.getColumn(2)
 
-        tl[0] = [r0.x, r0.y, r0.z]
-        tl[1] = [r1.x, r1.y, r1.z]
-        tl[2] = [r2.x, r2.y, r2.z]
+        tl = [r0.x, r0.y, r0.z, r1.x, r1.y, r1.z, r2.x, r2.y, r2.z]
         return tl
 
     def toList(self, rowMajor=False):
@@ -211,13 +212,13 @@ cdef class mat3:
             if index > self.nrows - 1:
                 raise IndexError
             else:
-                return vec3.from_cvec(vec3_f(self.cvec.getRow(<int>index)))
+                return vec3.from_cvec(vec3_f(self.cvec.getColumn(<int>index)))
         elif otype is slice:
-            return self.tolist()[index]
+            raise TypeError('index must be integer or 2-tuple')
         elif type(index) == tuple:
             return vec3_f(self.cvec.getRow(<int>index[0]))[<int>index[1]]
         else:
-            raise TypeError('an integer is required')
+            raise TypeError('index must be integer or 2-tuple')
 
     cdef checkViews(self):
         if self.view_count > 0:
@@ -245,7 +246,7 @@ cdef class mat3:
             elif type(value) in [float, int]:
                 if len(key) > 2:
                     raise ValueError('index tuple must be a 2-tuple')
-                self.cvec.getRow(key[0], nval)
+                self.cvec.getColumn(key[0], nval)
                 r = key[1]
                 if r == 0:
                     nval.x = value
@@ -255,18 +256,23 @@ cdef class mat3:
                     nval.z = value
                 else:
                     raise IndexError(r)
-
-                self.cvec.setRow(key[0], nval)
+                self.cvec.setColumn(key[0], nval)
                 return
         else:
             raise TypeError('an integer is required')
+
         if type(value) is not vec3:
             raise TypeError('a vec3 is required')
         for r in rows:
-            self.cvec.setRow(r, (<vec3>value).cvec)
+            self.cvec.setColumn(r, (<vec3>value).cvec)
 
     def __repr__(self):
-        return '[' + ',\n'.join(str(l) for l in self.tolist()) + ']'
+        cdef vec3 v = vec3()
+        cdef list res = [None, None, None]
+        for x in range(3):
+            _ = self.getRow(x, v)
+            res[x] = v.__repr__() + '\n'
+        return ''.join(s for s in res)
 
     def __sizeof__(self):
         return sizeof(mat3)
@@ -276,11 +282,21 @@ cdef class mat3:
         def __get__(self):
             return sizeof(self.cvec)
 
-    def ortho(self):
-        '''Return this matrix's ortho'''
-        return mat3.from_cvec(self.cvec.ortho())
+    def ortho(self, inplace=False):
+        '''
+        Return this matrix's ortho if inplace=False.
+        or Apply ortho to this matrix in place
+        '''
+        if inplace:
+            self.checkViews()
+            self.cvec.ortho(self.cvec)
+        else:
+            return mat3.from_cvec(self.cvec.ortho())
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
+        if not self.isTransposed:
+            self.cvec.transpose(self.cvec)
+            self.isTransposed = True
         cdef Py_ssize_t itemsize = sizeof(double)
 
         self.shape[0] = self.nrows
@@ -294,11 +310,11 @@ cdef class mat3:
         self.strides[1] = <Py_ssize_t>(a - b)
         self.strides[0] = self.ncols * self.strides[1]
 
-        buffer.buf = <double*>(<vec3_f*>&self.cvec)
+        buffer.buf = <double*>(<mat3_f*>&self.cvec)
         buffer.format = 'd'                     # double
         buffer.internal = NULL                  # see References
         buffer.itemsize = itemsize
-        buffer.len = sizeof(self.items) * itemsize   # product(shape) * itemsize
+        buffer.len = self.items * itemsize   # product(shape) * itemsize
         buffer.ndim = 2
         buffer.obj = self
         buffer.readonly = 0
@@ -314,11 +330,20 @@ cdef class mat3:
 
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
+        if self.view_count == 0:
+            self.cvec.transpose(self.cvec)
+            self.isTransposed = False
 
     ########################  Advanced methods  ########################
 
     def at(mat3 self, short i, short j):
         return self.cvec.at(i, j)
+
+    @staticmethod
+    def identity():
+        cdef mat3 res = mat3()
+        res.cvec.setIdentity()
+        return res
 
     # set_ and get_ methods
     def setIdentity(mat3 self):
@@ -379,25 +404,176 @@ cdef class mat3:
             dest = vec3(a, b, c)
             return a, b, c
 
-    def setRotation(mat3 self, double angle, vec3 axis):
-        self.checkViews()
-        self.cvec.setRotation(angle, axis.cvec)
+    @staticmethod
+    def rotation(double angle, vec3 axis):
+        cdef mat3 res = mat3()
+        res.cvec.setRotation(angle, axis.cvec)
+        return res
 
-        # mat3[T]& setRotationZXY(T x, T y, T z)
-        # mat3[T]& setRotationYXZ(T x, T y, T z)
-        # mat3[T]& setRotationXYZ(T x, T y, T z)
-        # mat3[T]& setRotationXZY(T x, T y, T z)
-        # mat3[T]& setRotationYZX(T x, T y, T z)
-        # mat3[T]& setRotationZYX(T x, T y, T z)
-        # void getRotationZXY(T& x, T& y, T& z) const
-        # void getRotationYXZ(T& x, T& y, T& z) const
-        # void getRotationXYZ(T& x, T& y, T& z) const
-        # void getRotationXZY(T& x, T& y, T& z) const
-        # void getRotationYZX(T& x, T& y, T& z) const
-        # void getRotationZYX(T& x, T& y, T& z) const
-        #
-        # mat3[T]& fromToRotation(const v3.vec3[T]& from_, const v3.vec3[T]& to)
-
-    def setScaling(mat3 self, vec3 scale):
+    def setRotationZXY(mat3 self, double x, double y, double z):
         self.checkViews()
-        self.cvec.setScaling(scale.cvec)
+        self.cvec.setRotationZXY(x, y, z)
+
+    def setRotationYXZ(mat3 self, double x, double y, double z):
+        self.checkViews()
+        self.cvec.setRotationYXZ(x, y, z)
+
+    def setRotationXYZ(mat3 self, double x, double y, double z):
+        self.checkViews()
+        self.cvec.setRotationXYZ(x, y, z)
+
+    def setRotationXZY(mat3 self, double x, double y, double z):
+        self.checkViews()
+        self.cvec.setRotationXZY(x, y, z)
+
+    def setRotationYZX(mat3 self, double x, double y, double z):
+        self.checkViews()
+        self.cvec.setRotationYZX(x, y, z)
+
+    def setRotationZYX(mat3 self, double x, double y, double z):
+        self.checkViews()
+        self.cvec.setRotationZYX(x, y, z)
+
+    cdef tuple getRot(mat3 self, bint a=False, bint b=False, bint c=False, bint d=False, bint e=False, bint f=False):
+        cdef double x=0, y=0, z=0
+        if a:
+            self.cvec.getRotationZXY(x, y, z)
+        elif b:
+            self.cvec.getRotationYXZ(x, y, z)
+        elif c:
+            self.cvec.getRotationXYZ(x, y, z)
+        elif d:
+            self.cvec.getRotationXZY(x, y, z)
+        elif e:
+            self.cvec.getRotationYZX(x, y, z)
+        elif f:
+            self.cvec.getRotationZYX(x, y, z)
+        else:
+            raise IndexError('wrong getRotation index!')
+        return x, y, z
+
+    def getRotationZXY(self):
+        return self.getRot(a=True)
+
+    def getRotationYXZ(self):
+        return self.getRot(a=False, b=True)
+
+    def getRotationXYZ(self):
+        return self.getRot(a=False, b=False, c=True)
+
+    def getRotationXZY(self):
+        return self.getRot(a=False, b=False, c=False, d=True)
+
+    def getRotationYZX(self):
+        return self.getRot(a=False, b=False, c=False, d=False, e=True)
+
+    def getRotationZYX(self):
+        return self.getRot(a=False, b=False, c=False, d=False, e=False, f=True)
+
+    @staticmethod
+    def fromToRotation(vec3 from_, vec3 to):
+        cdef mat3 res = mat3()
+        res.cvec.fromToRotation(from_.cvec, to.cvec)
+        return res
+
+    @staticmethod
+    def scaling(vec3 scale):
+        '''Returns a matrix set to "scale"'''
+        cdef mat3 res = mat3()
+        res.cvec.setScaling(scale.cvec)
+        return res
+
+    def determinant(mat3 self):
+        return self.cvec.determinant()
+
+    def inversed(mat3 self):
+        '''Returns a copy of this matrix inverse'''
+        return mat3.from_cvec(self.cvec.inverse())
+
+    def inverse(mat3 self):
+        '''Invert this matrix in place'''
+        self.checkViews()
+        self.cvec.inverse(self.cvec)
+
+    def transposed(mat3 self):
+        '''Returns a copy of this matrix transpose'''
+        return mat3.from_cvec(self.cvec.transpose())
+
+    def transpose(mat3 self):
+        '''Transpose this matrix in place'''
+        self.checkViews()
+        self.cvec.transpose(self.cvec)
+
+    def scale(mat3 self, vec3 s):
+        '''Scale this matrix for "s"'''
+        self.checkViews()
+        self.cvec.scale(s.cvec)
+
+    def rotate(mat3 self, double angle, vec3 axis):
+        '''Rotate this matrix'''
+        self.checkViews()
+        self.cvec.rotate(angle, axis.cvec)
+
+    def decompose(mat3 self):
+        '''Decompose this matrix into a mat3 for rotation and a
+        vec3 for scale'''
+        cdef mat3_f rot
+        cdef vec3_f scale
+        self.cvec.decompose(rot, scale)
+        return mat3.from_cvec(rot), vec3.from_cvec(scale)
+
+    ########################  euler <-> rot cg compat  ########################
+
+    @staticmethod
+    def fromEulerZXY(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationZXY(x, y, z)
+        return res
+
+    @staticmethod
+    def fromEulerXYZ(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationXYZ(x, y, z)
+        return res
+
+    @staticmethod   
+    def fromEulerXYZ(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationXYZ(x, y, z)
+        return res
+
+    @staticmethod
+    def fromEulerXZY(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationXZY(x, y, z)
+        return res
+
+    @staticmethod
+    def fromEulerYZX(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationYZX(x, y, z)
+        return res
+        
+    @staticmethod
+    def fromEulerZYX(double x, double y, double z):
+        cdef mat3 res = mat3()
+        res.setRotationZYX(x, y, z)
+        return res
+
+    def toEulerZXY(self):
+        return self.getRot(a=True)
+
+    def toEulerYXZ(self):
+        return self.getRot(a=False, b=True)
+
+    def toEulerXYZ(self):
+        return self.getRot(a=False, b=False, c=True)
+
+    def toEulerXZY(self):
+        return self.getRot(a=False, b=False, c=False, d=True)
+
+    def toEulerYZX(self):
+        return self.getRot(a=False, b=False, c=False, d=False, e=True)
+
+    def toEulerZYX(self):
+        return self.getRot(a=False, b=False, c=False, d=False, e=False, f=True)

@@ -11,7 +11,7 @@ cdef class vec3:
             return
 
         if getattr(args[0], '__getitem__', None):
-            if str(type(args[0])) == "<class 'numpy.ndarray'>" and args[0].ndim > 1:
+            if 'numpy.ndarray' in str(type(args[0])) and args[0].ndim > 1:
                 raise TypeError('for vectors, Numpy arrays should be 1-D')
             argsl = list(args[0])
         else:
@@ -34,8 +34,20 @@ cdef class vec3:
         res.cvec = cvec
         return res
 
+    cdef vec3_f mat3Mul(vec3 self, mat3_f M):
+        cdef vec3_f r1, r2, r3, res
+        res = self.cvec
+        r1 = M.getRow(0)
+        r2 = M.getRow(1)
+        r3 = M.getRow(2)
+        return vec3_f(res.x*r1.x + res.y*r2.x + res.z*r3.x,
+                 res.x*r1.y + res.y*r2.y + res.z*r3.y,
+                 res.x*r1.z + res.y*r2.z + res.z*r3.z
+                )
+
     def __mul__(vec3 self, other):
         cdef vec3_f res
+        cdef mat3_f M
         cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
@@ -44,6 +56,8 @@ cdef class vec3:
         elif otype == vec3:
             res2 = <vec3_f&>self.cvec * (<vec3_f&>(<vec3>other).cvec)
             return res2
+        elif otype is mat3:
+            return vec3.from_cvec(self.mat3Mul((<mat3>other).cvec))
         else:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec3, otype))
 
@@ -60,6 +74,9 @@ cdef class vec3:
                 return vec3(res[0], res[1], res[2])
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec3, otype))
+
+    def __div__(self, other not None):
+        return self.__truediv__(other)
 
     def __xor__(vec3 self, other not None):
         """ Return self^value. """
@@ -165,7 +182,14 @@ cdef class vec3:
                 raise IndexError(r)
 
     def __repr__(self):
-        return '[{}, {}, {}]'.format(self.cvec.x, self.cvec.y, self.cvec.z)
+        cdef double xf = round(self.cvec.x, 3)
+        cdef double yf = round(self.cvec.y, 3)
+        cdef double zf = round(self.cvec.z, 3)
+        cdef object x, y, z
+        x = int(xf) if int(xf) == round(xf, 3) else round(xf, 3)
+        y = int(yf) if int(yf) == round(yf, 3) else round(yf, 3)
+        z = int(zf) if int(zf) == round(zf, 3) else round(zf, 3)
+        return '({}, {}, {})'.format(x, y, z)
 
     def __sizeof__(self):
         return sizeof(vec3)

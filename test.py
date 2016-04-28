@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 try:
     from ExtensionBuilder import build
 
@@ -187,7 +189,7 @@ r0, r1, r2 = m
 m = mat3(x)
 m = mat3([x] * 9)
 m = mat3([45, 45, 45], [45, 45, 45], [153, 153, 153])
-print(m)
+print('from 3 lists of 3\n', m)
 '''
 (45, 45, 153)
 (45, 45, 153)
@@ -196,8 +198,8 @@ print(m)
 '''
 m = mat3(m)
 
-print('__repr__ and index[0]:\n{}\n'.format(m))
-print(m[0])
+print('index[0]:', m[0])
+print('index[0, 2]:', m[0, 2])
 
 if hasNumpy:
     arr = asarray(m)
@@ -208,6 +210,7 @@ if hasNumpy:
     arr = None
 
 print('multiply')
+m = mat3(3,3,9)
 print(m * 453, '\n')
 print(m * 3.0, '\n')
 # print(3 * m, '\n')
@@ -281,7 +284,7 @@ print(m)
 print('get row 0 as (a, b, c):', m.getRow(0))
 
 print('getColumn 2 / setColumn 2:')
-vec = vec3()
+# vec = vec3()
 m.getColumn(2, vec)
 vec[0, 2] = -6
 m.setColumn(2, vec)
@@ -289,7 +292,7 @@ print(m)
 print('get Column 2 as (a, b, c):', m.getColumn(2))
 
 print('getDiag / setDiag:')
-vec = vec3()
+# vec = vec3()
 m.getDiag(vec)
 vec[2] = 5.077
 m.setDiag(vec)
@@ -297,3 +300,18 @@ print(m)
 print('get Diag as (a, b, c):', m.getDiag())
 print('Get value \'at\' [2,0]:', m.at(2, 0))
 print(m[2, 0])
+print('get rotation ZXY:', m.getRotationZXY())
+print('set rotation:\n', m.rotation(10, vec3(10, 20, 0.6)))
+m.setRotationXYZ(0, 1, 2)
+print('set rotation XYZ:\n', m)
+print('mat from.. to.. rotation:\n', mat3.fromToRotation(vec3(0, 0, 20), vec3(10, 0, 0)))
+print('set scaling = 10:\n', mat3.scaling(vec3(10, 10, 10)))
+m = mat3(1)
+m.rotate(20, vec3(10, 20, 0.6))
+print('rotate:')
+print(m)
+m.scale(vec3(10, 10, 10))
+print('scale by 10:')
+print(m)
+rot, sca = m.decompose()
+print('\ndecompose to\n- Rotation mat3:\n{}\n- scale vec3:\n{}'.format(rot, sca))

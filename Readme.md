@@ -28,7 +28,7 @@ engine needs those in the future).
 #### Currently working:
  - vec3 (working)
  - vec4 (working)
- - mat3 (working/partial)
+ - mat3 (working)
  
 #### Contributions:
 If that ever happens, contributed code should be released under MIT or compatible license in order to be mergeable 

@@ -10,6 +10,7 @@ cdef class mat3:
     cdef mat3_f cvec
     cdef unsigned short items
     cdef unsigned int view_count
+    cdef bint isTransposed
 
     cdef Py_ssize_t ncols
     cdef Py_ssize_t nrows
@@ -29,3 +30,5 @@ cdef class mat3:
     cdef mat3 from_cvec(mat3_f cvec)
 
     cdef checkViews(self)
+
+    cdef tuple getRot(mat3 self, bint a=*, bint b=*, bint c=*, bint d=*, bint e=*, bint f=*)
