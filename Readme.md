@@ -26,13 +26,10 @@ Other modules/tools like scene management/drawing, load/conversion of files and 
 engine needs those in the future).
 
 #### Currently working:
- - vec3 (working)
- - vec4 (working)
- - mat3 (working)
- 
-#### Contributions:
-If that ever happens, contributed code should be released under MIT or compatible license in order to be mergeable 
-with this repo.
+ - vec3
+ - vec4 
+ - mat3
+
 
 
 
