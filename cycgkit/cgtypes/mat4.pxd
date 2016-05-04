@@ -27,13 +27,13 @@ cdef class mat4:
     cdef Py_ssize_t strides[2]
 
     @staticmethod
-    cdef mat4_f from_3iterable_of3(object it3)
+    cdef mat4_f from_4iterable_of4(object it4)
 
     @staticmethod
-    cdef mat4_f from_1iterable_of3(object it3)
+    cdef mat4_f from_1iterable_of4(object it4)
 
     @staticmethod
-    cdef mat4_f from_9double(object it9)
+    cdef mat4_f from_16double(object it16)
 
     @staticmethod
     cdef mat4 from_cvec(mat4_f cvec)

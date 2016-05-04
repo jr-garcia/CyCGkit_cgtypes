@@ -36,6 +36,19 @@ cdef class vec4:
         res.cvec = cvec
         return res
 
+
+    cdef vec4_f mat4Mul(vec4 self, mat4_f M):
+        cdef vec4_f r1, r2, r3, r4, res
+        res = self.cvec
+        r1 = M.getRow(0)
+        r2 = M.getRow(1)
+        r3 = M.getRow(2)
+        r4 = M.getRow(3)
+        return vec4_f(res.x * r1.x + res.y * r2.x + res.z * r3.x + res.w * r4.x,
+                      res.x * r1.y + res.y * r2.y + res.z * r3.y + res.w * r4.y,
+                      res.x * r1.z + res.y * r2.z + res.z * r3.z + res.w * r4.z,
+                      res.x * r1.w + res.y * r2.w + res.z * r3.w + res.w * r4.w)
+
     def __mul__(vec4 self, other):
         cdef vec4_f res
         cdef double res2
@@ -46,6 +59,8 @@ cdef class vec4:
         elif otype == vec4:
             res2 = <vec4_f&>self.cvec * (<vec4_f&>(<vec4>other).cvec)
             return res2
+        elif otype is mat4:
+            return vec4.from_cvec(self.mat4Mul((<mat4>other).cvec))
         else:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec4, otype))
 
@@ -181,7 +196,7 @@ cdef class vec4:
         y = int(yf) if int(yf) == round(yf, 3) else round(yf, 3)
         z = int(zf) if int(zf) == round(zf, 3) else round(zf, 3)
         w = int(wf) if int(wf) == round(wf, 3) else round(wf, 3)
-        return '({}, {}, {})'.format(x, y, z, w)
+        return '[{}, {}, {}, {}]'.format(x, y, z, w)
 
     def __sizeof__(self):
         return sizeof(vec4)

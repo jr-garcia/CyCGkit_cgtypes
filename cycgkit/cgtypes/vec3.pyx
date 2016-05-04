@@ -41,9 +41,8 @@ cdef class vec3:
         r2 = M.getRow(1)
         r3 = M.getRow(2)
         return vec3_f(res.x*r1.x + res.y*r2.x + res.z*r3.x,
-                 res.x*r1.y + res.y*r2.y + res.z*r3.y,
-                 res.x*r1.z + res.y*r2.z + res.z*r3.z
-                )
+                      res.x*r1.y + res.y*r2.y + res.z*r3.y,
+                      res.x*r1.z + res.y*r2.z + res.z*r3.z)
 
     def __mul__(vec3 self, other):
         cdef vec3_f res
