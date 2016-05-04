@@ -210,12 +210,12 @@ if hasNumpy:
     arr = None
 
 print('multiply')
-m = mat3(3,3,9)
+m = mat3(3, 3, 9)
 print(m * 453, '\n')
 print(m * 3.0, '\n')
 # print(3 * m, '\n')
-print(m * vec3(3), '\n')  # (27, 27, 81)
-print(vec3(3) * m, '\n')  # (45, 45, 45)
+print(m * vec3(3), '\n')
+print(vec3(3) * m, '\n')
 print('Dot product:\n', m * m)
 try:
     print(m * 'g')
@@ -273,7 +273,7 @@ if hasNumpy:
     finally:
         arr = None
 
-m.setIdentity()
+m = mat3.identity()
 print('identity:\n{}'.format(m))
 print('getRow 0 / setRow 0:')
 vec = vec3()
