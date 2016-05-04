@@ -12,12 +12,14 @@ except ImportError:
 
 class test(TestCase):
     def setUp(self):
-        a = 0, 1.6, 2, 3, 4.977, 5, 6, .007, 8
-        b = 0.000921, 10, 20.5
-        self.cym = cycg.mat3(*a)
-        self.cgm = cg.mat3(*a)
-        self.cyvec3 = cycg.vec3(*b)
-        self.cgvec3 = cg.vec3(*b)
+        a = 0, 1.6, 2, 3, 4.977, 5, 6, .007, 8, 0, 1.6, 2, 3, 4.977, 5, 6
+        b = 0.000921, 10, 20.5, -34.5
+        self.cym = cycg.mat4(*a)
+        self.cgm = cg.mat4(*a)
+        self.cyvec4 = cycg.vec4(*b)
+        self.cgvec4 = cg.vec4(*b)
+        self.cyvec3 = cycg.vec3(2, -4, .8)
+        self.cgvec3 = cg.vec3(2, -4, .8)
 
     def assertEqual(self, first, second, msg=None):
         types = [type(self.cgm), type(self.cym)]
@@ -29,14 +31,14 @@ class test(TestCase):
 
         super(test, self).assertEqual(first, second, msg)
 
-    def test_from9floats(self):
-        m1 = cg.mat3(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8)
-        m2 = cycg.mat3(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8)
+    def test_from16floats(self):
+        m1 = cg.mat4(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8, 0, 1.6, 2, 3, 4.977, 5, 6)
+        m2 = cycg.mat4(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8, 0, 1.6, 2, 3, 4.977, 5, 6)
         self.assertEqual(m1, m2)
 
-    def test_from3lists(self):
-        m1 = cg.mat3([0, 1.6, 2], [3, 4.977, 5], [6, .007, 8])
-        m2 = cycg.mat3([0, 1.6, 2], [3, 4.977, 5], [6, .007, 8])
+    def test_from4lists(self):
+        m1 = cg.mat4([0, 1.6, 2, 3], [4.977, 5, 6, .007], [8, 0, 1.6, 2], [3, 4.977, 5, 6])
+        m2 = cycg.mat4([0, 1.6, 2, 3], [4.977, 5, 6, .007], [8, 0, 1.6, 2], [3, 4.977, 5, 6])
         self.assertEqual(m1, m2)
 
     def test_toListRow(self):
@@ -54,6 +56,9 @@ class test(TestCase):
     def test_indexSimple2(self):
         self.assertEqual(list(self.cgm[2]), list(self.cym[2]))
 
+    def test_indexSimple3(self):
+        self.assertEqual(list(self.cgm[2]), list(self.cym[2]))
+
     def test_indexSubindex0(self):
         index = [0, 0]
         self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
@@ -66,6 +71,10 @@ class test(TestCase):
         index = [0, 2]
         self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
 
+    def test_indexSubindex3(self):
+        index = [0, 3]
+        self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
+
     def test_indexTuple(self):
         index = [0, 2]
         self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
@@ -74,6 +83,16 @@ class test(TestCase):
         cystr = str(self.cym)
         cgstr = str(self.cgm)
         self.assertEqual(cgstr, cystr)
+
+    def test_multVec4Left(self):
+        v1 = self.cgm * self.cgvec4
+        v2 = self.cym * self.cyvec4
+        self.assertEqual(list(v1), list(v2))
+
+    def test_multVec4Right(self):
+        v1 = self.cgvec4 * self.cgm
+        v2 = self.cyvec4 * self.cym
+        self.assertEqual(list(v1), list(v2))
 
     def test_multVec3Left(self):
         v1 = self.cgm * self.cgvec3
