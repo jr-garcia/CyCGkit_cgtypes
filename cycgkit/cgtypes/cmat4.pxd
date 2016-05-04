@@ -20,63 +20,40 @@ cdef extern from "mat4.h" namespace 'support3d' nogil:
         # set_ and get_ methods
         mat4[T]& setIdentity()
         mat4[T]& setNull()
-        mat4[T]& setRow(short i, const v3.vec3[T]& r)
+        mat4[T]& setRow(short i, const vec4[T]& r)
         mat4[T]& setRow(short i, const T a, const T b, const T c, const T d)
-        mat4[T]& setColumn(short i, const v3.vec3[T]& c)
+        mat4[T]& setColumn(short i, const vec4[T]& c)
         mat4[T]& setColumn(short i, const T a, const T b, const T c, const T d)
-        mat4[T]& setDiag(const v3.vec3[T]& d)
+        mat4[T]& setDiag(const vec4[T]& d)
         mat4[T]& setDiag(T a, T b, T c, T d)
-        v4.vec4[T] getRow(short i) const
-        void     getRow(short i, v4.vec4[T]& dest) const
-        void     getRow(short i, T& a, T& b, T& c) const
-        v4.vec4[T] getColumn(short i) const
-        void     getColumn(short i, v4.vec4[T]& dest) const
+        vec4[T] getRow(short i) const
+        void     getRow(short i, vec4[T]& dest) const
+        void     getRow(short i, T& a, T& b, T& c, T& d) const
+        vec4[T] getColumn(short i) const
+        void     getColumn(short i, vec4[T]& dest) const
         void     getColumn(short i, T& a, T& b, T& c, T& d) const
-        v4.vec4[T] getDiag() const
-        void     getDiag(v4.vec4[T]& dest) const
+        vec4[T] getDiag() const
+        void     getDiag(vec4[T]& dest) const
         void     getDiag(T& a, T& b, T& c, T& d) const
 
-#>>        mat4[T]& setTranslation(const v3.vec3[T]& t);
-        mat4[T]& setRotation(T angle, const v3.vec3[T]& axis)
-        mat4[T]& setScaling(const v3.vec3[T]& s)
-#        mat4<T>& setOrthographic(T left, T right, T bottom, T top, T nearval, T farval);
-#          mat4<T>& setFrustum(T left, T right, T bottom, T top, T near_, T far_);
-#          mat4<T>& setPerspective(T fovy, T aspect, T near_, T far_);
-#          mat4<T>& setLookAt(const vec3<T>& pos, const vec3<T>& target, const vec3<T>& up=vec3<T>(0,0,1));
-#          mat4<T>& setMat3(const mat3<T>& m3);
-#          mat3<T>  getMat3() const;
-#          mat3<T>& getMat3(mat3<T>& dest) const;
-
-        mat4[T]& setRotationZXY(T x, T y, T z)
-        mat4[T]& setRotationYXZ(T x, T y, T z)
-        mat4[T]& setRotationXYZ(T x, T y, T z)
-        mat4[T]& setRotationXZY(T x, T y, T z)
-        mat4[T]& setRotationYZX(T x, T y, T z)
-        mat4[T]& setRotationZYX(T x, T y, T z)
-        void getRotationZXY(T& x, T& y, T& z) const
-        void getRotationYXZ(T& x, T& y, T& z) const
-        void getRotationXYZ(T& x, T& y, T& z) const
-        void getRotationXZY(T& x, T& y, T& z) const
-        void getRotationYZX(T& x, T& y, T& z) const
-        void getRotationZYX(T& x, T& y, T& z) const
-
-        mat4[T]& fromToRotation(const v3.vec3[T]& from_, const v3.vec3[T]& to)
-
-        # Operators
-        #mat4[T]& operator+=(const mat4[T]& A)       # matrix += matrix
-        #mat4[T]& operator-=(const mat4[T]& A)       # matrix -= matrix
-        #mat4[T]& operator*=(const mat4[T]& A)       # matrix *= matrix
-        #mat4[T]& operator*=(const T s)              # matrix *= scalar
-        #mat4[T]& operator/=(const T s)              # matrix /= scalar
-        #mat4[T]& operator%=(const T r)
-        #mat4[T]& operator%=(const mat4[T]& b)
+#>>        mat4[T]& setTranslation(const vec3[T]& t);
+        mat4[T]& setRotation(T angle, const vec3[T]& axis)
+        mat4[T]& setScaling(const vec3[T]& s)
+#        mat4[T]& setOrthographic(T left, T right, T bottom, T top, T nearval, T farval);
+#          mat4[T]& setFrustum(T left, T right, T bottom, T top, T near_, T far_);
+#          mat4[T]& setPerspective(T fovy, T aspect, T near_, T far_);
+#          mat4[T]& setLookAt(const vec3[T]& pos, const vec3[T]& target, const vec3[T]& up=vec3[T](0,0,1));
+#          mat4[T]& setMat3(const mat3[T]& m3);
+#          mat3[T]  getMat3() const;
+#          mat3[T]& getMat3(mat3[T]& dest) const;
 
         mat4[T] operator+(const mat4[T]& A) const   # matrix = matrix + matrix
         mat4[T] operator-(const mat4[T]& A) const   # matrix = matrix - matrix
         mat4[T] operator-() const                   # matrix = -matrix
 
         mat4[T] operator*(const mat4[T]& A) const   # matrix = matrix * matrix
-        v3.vec3[T] operator*(const v3.vec3[T]& v) const   # vector = matrix * vector
+        vec3[T] operator*(const vec3[T]& v) const   # vector = matrix * vector
+        vec4[T] operator*(const vec4[T]& v) const   # vector = matrix * vector
         mat4[T] operator*(const T s) const          # matrix = matrix * scalar
 
         mat4[T] operator/(const T s) const          # matrix = matrix / scalar
@@ -99,10 +76,11 @@ cdef extern from "mat4.h" namespace 'support3d' nogil:
         mat4[T]  transpose() const
         mat4[T]& transpose(mat4[T]& dest) const
 
-        mat4[T]& scale(const v3.vec3[T]& s)
-        mat4[T]& rotate(T angle, const v3.vec3[T]& axis)
+        mat4[T]& translate(const vec3[T]& t);
+        mat4[T]& scale(const vec3[T]& s)
+        mat4[T]& rotate(T angle, const vec3[T]& axis)
 
         mat4[T]& ortho(mat4[T]& dest) const
         mat4[T] ortho() const
 
-        void decompose(mat4[T]& rot, v3.vec3[T]& scale) const
+        void decompose(vec3[T]& t, mat4[T]& rot, vec3[T]& scale) const
