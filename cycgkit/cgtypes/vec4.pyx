@@ -23,6 +23,16 @@ cdef class vec4:
             y = argsl[1]
             z = argsl[2]
             w = argsl[3]
+        elif len(argsl) == self.items -1:
+            x = argsl[0]
+            y = argsl[1]
+            z = argsl[2]
+            w = 0.0
+        elif len(argsl) == self.items -2:
+            x = argsl[0]
+            y = argsl[1]
+            z = 0.0
+            w = 0.0
         elif len(argsl) == 1 and type(argsl[0]) in [int, float]:
             x = y = z = w = argsl[0]
         else:
@@ -35,7 +45,6 @@ cdef class vec4:
         cdef vec4 res = vec4()
         res.cvec = cvec
         return res
-
 
     cdef vec4_f mat4Mul(vec4 self, mat4_f M):
         cdef vec4_f r1, r2, r3, r4, res
@@ -80,16 +89,6 @@ cdef class vec4:
 
     def __div__(self, other not None):
         return self.__truediv__(other)
-
-    # def __xor__(vec4 self, other not None):
-    #     """ Return self^value. """
-    #     cdef vec4_f res
-    #     cdef type otype = type(other)
-    #     if otype is vec4:
-    #         res = (<vec4_f&>(<vec4>self).cvec) ^ (<vec4_f&>(<vec4>other).cvec)
-    #         return vec4(res[0], res[1], res[2], res[3])
-    #     else:
-    #         raise TypeError("unsupported operand type(s) for ^: \'{}\' and \'{}\'".format(vec4, otype))
 
     def __mod__(vec4 self, other not None):
         """ Return self%value. """

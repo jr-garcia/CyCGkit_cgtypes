@@ -462,3 +462,113 @@ cdef class mat4:
         cdef vec3_f scale
         self.cvec.decompose(t, rot, scale)
         return vec3.from_cvec(t), mat4.from_cvec(rot), vec3.from_cvec(scale)
+
+    ########################  MAT4 METHODS  ########################
+
+    @staticmethod
+    def orthographic(double left, double right, double bottom, double top, double nearval, double farval):
+        cdef mat4 ret = mat4()
+        ret.cvec.setOrthographic(left, right, bottom, top, nearval, farval)
+        return ret
+
+    @staticmethod
+    def frustum(double left, double right, double bottom, double top, double near_, double far_):
+        cdef mat4 ret = mat4()
+        ret.cvec.setFrustum(left, right, bottom, top, near_, far_)
+        return ret
+
+    @staticmethod
+    def perspective(double fovy, double aspect, double near_, double far_):
+        cdef mat4 ret = mat4()
+        ret.cvec.setPerspective(fovy, aspect, near_, far_)
+        return ret
+
+    @staticmethod
+    def lookAt(vec3 pos, vec3 target, vec3 up=None):
+        # converted from original CGkit.
+        cdef mat4 ret = mat4()
+        cdef vec4_f r1 = vec4_f(), r2 = vec4_f(), r3 = vec4_f(), r4 = vec4_f()
+        if up is None:
+            up = vec3(0,0,1)
+            
+        cdef vec3_f dir = target.cvec - pos.cvec
+        cdef vec3_f vup = vec3_f(up.cvec)
+        cdef vec3_f right
+        
+        dir.normalize(dir)
+        vup.normalize(vup)
+        vup -= v3.mul((vup * dir), dir)
+        
+        try:
+            vup.normalize(vup)
+        except:
+            # We're looking along the up direction, so choose
+            # an arbitrary direction that is perpendicular to dir
+            # as new up.
+            vup = dir.ortho()
+            
+        right = vup.cross(dir);
+        right.normalize(right);
+
+        r1.x = right.x;
+        r2.x = right.y;
+        r3.x = right.z;
+        r4.x = 0.0;
+        r1.y = vup.x;
+        r2.y = vup.y;
+        r3.y = vup.z;
+        r4.y = 0.0;
+        r1.z = dir.x;
+        r2.z = dir.y;
+        r3.z = dir.z;
+        r4.z = 0.0;
+        r1.w = pos.x;
+        r2.w = pos.y;
+        r3.w = pos.z;
+        r4.w = 1.0;
+
+        ret.cvec.setRow(0, r1)
+        ret.cvec.setRow(1, r2)
+        ret.cvec.setRow(2, r3)
+        ret.cvec.setRow(3, r4)
+
+        return ret
+
+    @staticmethod
+    def lookAtRH(vec3 eye, vec3 target, vec3 up=None):
+        '''
+        Alternate lookAt function for those cases when
+        standard CGkit's function does not work for you, based on:
+
+        http://devmaster.net/posts/7255/glulookat-alternative-and-building-look-at-matrix
+        http://webglfactory.blogspot.mx/2011/06/how-to-create-view-matrix.html
+        '''
+        cdef vec3 vz, vx, vy
+        cdef vec4 v4e
+        cdef mat4 ViewMatrix
+        if up is None:
+            up = vec3(0, 1, 0)
+        try:
+            vz = vec3(target - eye).normalized()
+            vx = vec3(vz.cross(up)).normalized()
+            vy = vx.cross(vz)
+            v4e = vec4(eye)
+            v4e.w = 1
+            ViewMatrix = mat4(
+                vec4(vx),
+                vec4(vy),
+                vec4(-vz),
+                # vec4(0, 0, 0, 1))
+                v4e)
+            ViewMatrix.cvec.inverse(ViewMatrix.cvec)
+            return ViewMatrix  # * mat4.translation(eye)
+
+        except Exception as ex:
+            raise RuntimeError("cycgkit's lookAtRH: " + str(ex))
+
+    def setMat3(mat4 self, mat3 m3):
+         self.cvec.setMat3(m3.cvec)
+
+    def getMat3(mat4 self):
+        cdef mat3_f ret = self.cvec.getMat3()
+        return mat3.from_cvec(ret)
