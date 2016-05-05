@@ -5,10 +5,8 @@ cdef extern from "vec3.h" namespace 'support3d' nogil:
         T x
         T y
         T z
-        #char leftBracket  # Linke Klammer für Ein-/Ausgabe (Default '<')
-        #char rightBracket # Rechte Klammer (Default '>')
-        #char separator    # Trennzeichen für Komponenten (Default ',')
-        T epsilon         # Schranke für Vergleiche
+
+        T epsilon
 
         # Constructors
         vec3()
@@ -58,8 +56,8 @@ cdef extern from "vec3.h" namespace 'support3d' nogil:
 
         T length() const
 
-        vec3[T]  normalize() const
-        vec3[T]& normalize(vec3[T]& dest)
+        vec3[T]  normalize() except+
+        vec3[T]& normalize(vec3[T]& dest) except+
         # Return a vector that's perpendicular to this
         vec3[T]  ortho() const
 
@@ -81,13 +79,17 @@ cdef extern from "vec3.h" namespace 'support3d' nogil:
 
         #char* to_str(char *s) const
 
+        inline vec3[T] cross(const vec3[T]& b) const # vec3 = this x b
+
         ########## Alternatives to operators ##########/
 
-        vec3[T]& add(const vec3[T]& a, const vec3[T]& b)   # this = a+b
-        vec3[T]& sub(const vec3[T]& a, const vec3[T]& b)   # this = a-b
-        vec3[T]& neg(const vec3[T]& a)                     # this = -a
-        vec3[T]& mul(const vec3[T]& a, const T r)          # this = a*r
-        vec3[T]& div(const vec3[T]& a, const T r)          # this = a/r
-        vec3[T]& cross(const vec3[T]& a, const vec3[T]& b) # this = a*b
+    inline vec3[double]& add(const vec3[double]& a, const vec3[double]& b)   # this = a+b
+    inline vec3[double]& neg(const vec3[double]& a)                     # this = -a
+    inline vec3[double]& sub(const vec3[double]& a, const vec3[double]& b)   # this = a-b
+    inline vec3[double]& mul(const vec3[double]& a, const double r)          # this = a*r
+    inline vec3[double]& div(const vec3[double]& a, const double r)          # this = a/r
+    #inline vec3[double]& cross(const vec3[double]& a, const vec3[double]& b) # this = a*b
+    inline vec3[double] mul 'operator*'(const double r,const vec3[double]& v)
 
-        vec3[T] cross(const vec3[T]& b) const # vec3 = this x b
+    inline double angle(const vec3[double] &a, const vec3[double] &b) except+
+    inline double sangle(const vec3[double] &a, const vec3[double] &b, const vec3[double] &axis) except+

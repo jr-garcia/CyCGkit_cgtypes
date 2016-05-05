@@ -30,7 +30,7 @@ cdef extern from "vec4.h" namespace 'support3d' nogil:
         vec4[T] operator-() const                 # vec = -vec
         vec4[T] operator*(const T r) const        # vec = vec * scalar
         T operator*(const vec4[T]& b) const       # scalar = vec * vec (dot prod.)
-        #vec4[T] operator^(const vec4[T]& b) const # vec = vec * vec (cross prod.)
+        vec4[T] operator^(const vec4[T]& b) const # vec = vec * vec (cross prod.)
         vec4[T] operator/(const T r) except +     # vec = vec / scalar
         vec4[T] operator%(const T b) const        # vec = vec % scalar (each component)
         vec4[T] operator%(const vec4[T]& b) const # vec = vec % vec
@@ -63,13 +63,10 @@ cdef extern from "vec4.h" namespace 'support3d' nogil:
 
         #char* to_str(char *s) const
 
-        ########## Alternatives to operators ##########/
+    ########## Alternatives to operators ##########/
 
-        vec4[T]& add(const vec4[T]& a, const vec4[T]& b)   # this = a+b
-        vec4[T]& sub(const vec4[T]& a, const vec4[T]& b)   # this = a-b
-        vec4[T]& neg(const vec4[T]& a)                     # this = -a
-        vec4[T]& mul(const vec4[T]& a, const T r)          # this = a*r
-        vec4[T]& div(const vec4[T]& a, const T r)          # this = a/r
-        vec4[T]& cross(const vec4[T]& a, const vec4[T]& b) # this = a*b
-
-        vec4[T] cross(const vec4[T]& b) const # vec4 = this x b
+    inline vec4[double]& add(const vec4[double]& a, const vec4[double]& b)   # this = a+b
+    inline vec4[double]& sub(const vec4[double]& a, const vec4[double]& b)   # this = a-b
+    inline vec4[double]& neg(const vec4[double]& a)                     # this = -a
+    inline vec4[double]& mul(const vec4[double]& a, constdoubler)          # this = a*r
+    inline vec4[double]& div(const vec4[double]& a, constdoubler)          # this = a/r

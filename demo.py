@@ -38,7 +38,10 @@ print('multiply')
 print(v * 453)
 print(v * 3.0)
 print('Dot product:', v * v)
-print('Cross:', v ^ v)
+print('Cross(^):', vec3(1, 2, 3) ^ v)
+print('self.cross:', vec3(1, 2, 3).cross(v))
+print('vec3.cross(a, b):', vec3.cross(vec3(1, 2, 3), v))
+
 try:
     print(v * 'g')
 except TypeError as t:
@@ -94,8 +97,13 @@ r, theta, phi = v.get_polar()
 print('get polar (r, theta, phi):', (r, theta, phi))
 v.set_polar(0.2, 0, 0)
 print('set polar:', v)
+print('angle', v.angle(vec3(1, 2, 3)))
+print('angle static', vec3.angle(v, vec3(1, 2, 3)))
+print('sangle', v.sangle(vec3(1, 2, 3), vec3(0, -.5, 0)))
+print('sangle static', vec3.sangle(v, vec3(1, 2, 3), vec3(0, -.5, 0)))
 print('vec3 memory size:', v.__sizeof__())
 print('cgckit c-vec3 memory size: {} (3 doubles of size 8 each)'.format(v.cSize))
+v += v
 
 print('\n###################################   VEC 4   ###################################')
 from cycgkit.cgtypes import vec4
@@ -119,7 +127,6 @@ print('multiply')
 print(v * 453)
 print(v * 3.0)
 print('Dot product:', v * v)
-# print('Cross:', v ^ v)
 try:
     print(v * 'g')
 except TypeError as t:
@@ -160,9 +167,6 @@ print('less or equal (false): ', v <= vec4(0, 1, 2, 3))
 print('normalized:', v.normalized())
 v.normalize()
 print('normalize self:', v)
-# print('ortho:', v.ortho())
-# print('reflect:', v.reflect(v))
-# print('refract:', v.refract(v, -1))
 print('max/abs/index')
 print(v.max())
 print(v.maxAbs())
@@ -171,13 +175,9 @@ print('min/abs/index')
 print(v.min())
 print(v.minAbs())
 print(v.minIndex())
-# r, theta, phi = v.get_polar()
-# print('get polar (r, theta, phi):', (r, theta, phi))
-# v.set_polar(0.2, 0, 0)
-# print('set polar:', v)
 print('vec4 memory size:', v.__sizeof__())
 print('cgckit c-vec4 memory size: {} (4 doubles of size 8 each)'.format(v.cSize))
-
+v /= 2
 print('\n###################################   MAT 3   ###################################')
 from cycgkit.cgtypes import mat3
 
@@ -315,3 +315,8 @@ print('scale by 10:')
 print(m)
 rot, sca = m.decompose()
 print('\ndecompose to\n- Rotation mat3:\n{}\n- scale vec3:\n{}'.format(rot, sca))
+
+print('\n###################################   MAT 4   ###################################')
+from cycgkit.cgtypes import mat4
+
+print(mat4.lookAtRH(vec3(), vec3(1.4, .5, 0)))

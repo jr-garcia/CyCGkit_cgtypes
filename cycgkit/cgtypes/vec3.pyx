@@ -44,6 +44,26 @@ cdef class vec3:
                       res.x*r1.y + res.y*r2.y + res.z*r3.y,
                       res.x*r1.z + res.y*r2.z + res.z*r3.z)
 
+    cdef vec3_f mat4Mul(vec3 self, mat4_f M):
+        cdef vec4_f r1, r2, r3, r4
+        cdef vec3_f res
+        res = self.cvec
+        r1 = M.getRow(0)
+        r2 = M.getRow(1)
+        r3 = M.getRow(2)
+        r4 = M.getRow(3)
+
+        cdef vec3_f ret = vec3_f(res.x*r1.x + res.y*r2.x + res.z*r3.x + r4.x,
+                                 res.x*r1.y + res.y*r2.y + res.z*r3.y + r4.y,
+                                 res.x*r1.z + res.y*r2.z + res.z*r3.z + r4.z)
+
+        cdef double w = res.x*r1.w + res.y*r2.w + res.z*r3.w + r4.w
+
+        if (abs(w) > self.epsilon):
+            ret /= w
+
+        return ret
+
     def __mul__(vec3 self, other):
         cdef vec3_f res
         cdef mat3_f M
@@ -57,6 +77,8 @@ cdef class vec3:
             return res2
         elif otype is mat3:
             return vec3.from_cvec(self.mat3Mul((<mat3>other).cvec))
+        elif otype is mat4:
+            return vec3.from_cvec(self.mat4Mul((<mat4>other).cvec))
         else:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec3, otype))
 
@@ -83,6 +105,16 @@ cdef class vec3:
         cdef type otype = type(other)
         if otype is vec3:
             res = (<vec3_f&>(<vec3>self).cvec) ^ (<vec3_f&>(<vec3>other).cvec)
+            return vec3(res[0], res[1], res[2])
+        else:
+            raise TypeError("unsupported operand type(s) for ^: \'{}\' and \'{}\'".format(vec3, otype))
+
+    def cross(vec3 self, other not None):
+        """ Return self.cross(other). """
+        cdef vec3_f res
+        cdef type otype = type(other)
+        if otype is vec3:
+            res = (<vec3_f&>(<vec3>self).cvec).cross(<vec3_f&>(<vec3>other).cvec)
             return vec3(res[0], res[1], res[2])
         else:
             raise TypeError("unsupported operand type(s) for ^: \'{}\' and \'{}\'".format(vec3, otype))
@@ -294,3 +326,9 @@ cdef class vec3:
         cdef double r_ = 0, theta_ = 0, phi_ = 0
         self.cvec.get_polar(r_, theta_, phi_)
         return r_, theta_, phi_
+
+    def angle(vec3 self, vec3 b):
+        return v3.angle(self.cvec, b.cvec)
+
+    def sangle(vec3 self, vec3 b, vec3 axis):
+        return v3.sangle(self.cvec, b.cvec, axis.cvec)

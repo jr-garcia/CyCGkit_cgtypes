@@ -5,6 +5,7 @@ import cgkit.cgtypes as cg
 
 try:
     import numpy as np
+
     hasNumpy = True
 except ImportError:
     hasNumpy = False
@@ -22,14 +23,13 @@ class test(TestCase):
         self.cgvec3 = cg.vec3(2, -4, .8)
 
     def assertEqual(self, first, second, msg=None):
-        types = [type(self.cgm), type(self.cym)]
-        if type(first) in types:
+        types = [type(self.cgm), cg._core.mat4, type(self.cym)]
+        if type(first) in types and type(second) in types:
             first = first.toList()
-
-        if type(second) in types:
             second = second.toList()
-
-        super(test, self).assertEqual(first, second, msg)
+            self.assertSequenceEqual(first, second, msg, seq_type=list)
+        else:
+            super(test, self).assertEqual(first, second, msg)
 
     def test_from16floats(self):
         m1 = cg.mat4(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8, 0, 1.6, 2, 3, 4.977, 5, 6)
@@ -110,6 +110,19 @@ class test(TestCase):
         cyarr = np.asarray(self.cym)
         self.assertTrue(np.all(np.equal(cgarr, cyarr)))
 
+    def test_lookAt(self):
+        v1 = self.cgm.lookAt(cg.vec3(), self.cgvec3)
+        v2 = self.cym.lookAt(cycg.vec3(), self.cyvec3)
+        self.assertEqual(v1, v2)
+
+    def test_lookAtAlt(self):
+        v1 = self.cgm.lookAt(cg.vec3(), self.cgvec3, cg.vec3(0, 1, 0))
+        v2 = self.cym.lookAtRH(cycg.vec3(), self.cyvec3, cycg.vec3(0, 1, 0))
+        try:
+            self.assertEqual(v1, v2)
+            raise AssertionError('CGkit\'s lookAt and CyCGkit\'s lookAtRH return same result.')
+        except AssertionError:
+            return
 
 if __name__ == '__main__':
     unittest.main()

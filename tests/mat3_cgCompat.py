@@ -20,14 +20,13 @@ class test(TestCase):
         self.cgvec3 = cg.vec3(*b)
 
     def assertEqual(self, first, second, msg=None):
-        types = [type(self.cgm), type(self.cym)]
-        if type(first) in types:
+        types = [type(self.cgm), cg._core.mat3, type(self.cym)]
+        if type(first) in types and type(second) in types:
             first = first.toList()
-
-        if type(second) in types:
             second = second.toList()
-
-        super(test, self).assertEqual(first, second, msg)
+            self.assertAlmostEqual(first, second, msg)
+        else:
+            super(test, self).assertEqual(first, second, msg)
 
     def test_from9floats(self):
         m1 = cg.mat3(0, 1.6, 2, 3, 4.977, 5, 6, .007, 8)
