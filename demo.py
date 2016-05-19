@@ -319,4 +319,14 @@ print('\ndecompose to\n- Rotation mat3:\n{}\n- scale vec3:\n{}'.format(rot, sca)
 print('\n###################################   MAT 4   ###################################')
 from cycgkit.cgtypes import mat4
 
-print(mat4.lookAtRH(vec3(), vec3(1.4, .5, 0)))
+print('look at:\n', mat4.lookAtRH(vec3(), vec3(1.4, .5, 0)))
+
+print('\n###################################   QUAT   ###################################')
+from cycgkit.cgtypes import quat
+from cycgkit.cgtypes.quat import slerp, squad
+
+q = quat()
+print('empty:', q)
+print('from mat3:', quat.fromMat(mat3(1.4)))
+print('slerp:', slerp(.222, q, quat(123)))
+print('squad:', squad(.222, q, quat(123), quat(.005), quat(900)))

@@ -30,6 +30,7 @@ engine needs those in the future).
  - vec4 
  - mat3
  - mat4
+ - quat
 
 
 

@@ -152,7 +152,7 @@ cdef class vec4:
             else:
                 return self.cvec[index]
         elif otype is slice:
-            return [self.cvec.x, self.cvec.y, self.cvec.z][index]
+            return [self.cvec.x, self.cvec.y, self.cvec.z, self.cvec.w][index]
         else:
             raise TypeError('an integer is required')
 
@@ -253,7 +253,7 @@ cdef class vec4:
             raise ZeroDivisionError("divide by zero");
         return vec4.from_cvec(self.cvec.normalize())
 
-    def normalize(self):
+    def normalize(vec4 self):
         '''Normalize this vector'''
         if self.length <= self.epsilon:
             raise ZeroDivisionError("divide by zero");

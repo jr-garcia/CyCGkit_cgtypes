@@ -7,7 +7,8 @@ cdef class vec3:
         cdef list argsl
         self.items = 3
         if args.__len__() == 0:
-            self.cvec = vec3_f(0, 0, 0)
+            self.cvec = vec3_f()
+            self.epsilon = self.cvec.epsilon
             return
 
         if getattr(args[0], '__getitem__', None):
@@ -27,6 +28,7 @@ cdef class vec3:
             raise TypeError('Wrong number of arguments. Expected {} got {}'.format(self.items, len(argsl)))
 
         self.cvec = vec3_f(x, y, z)
+        self.epsilon = self.cvec.epsilon
 
     @staticmethod
     cdef vec3 from_cvec(vec3_f cvec):
@@ -253,11 +255,6 @@ cdef class vec3:
 
        def __set__(self, value):
            self.cvec.z = value
-
-    property epsilon:
-       "-"
-       def __get__(self):
-           return self.cvec.epsilon
 
     property length:
         "-"
