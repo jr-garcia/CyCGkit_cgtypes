@@ -1,7 +1,7 @@
 from setuptools import Extension, setup
 from Cython.Build import cythonize
 from sys import platform
-from numpy import get_include
+# from numpy import get_include
 
 from distutils.sysconfig import get_config_vars
 import os
@@ -10,7 +10,7 @@ import os
 if opt:
     os.environ['OPT'] = " ".join(flag for flag in opt.split() if flag != '-Wstrict-prototypes')
 
-incl = ['./include', get_include()]
+incl = ['./include']
 extrac = []
 
 if platform == 'win32':

@@ -74,7 +74,6 @@ cdef class vec4:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec4, otype))
 
     def __truediv__(self, other not None):
-        cdef vec4_f res
         cdef type otype = type(other)
         if type(self) is not vec4 and otype is vec4:
             raise TypeError('vec4 in the right not supported')
@@ -82,8 +81,7 @@ cdef class vec4:
             if other == 0:
                 raise ZeroDivisionError("can't divide by 0")
             else:
-                res = (<vec4_f&>(<vec4>self).cvec) / (<const double>other)
-                return vec4(res[0], res[1], res[2], res[3])
+                return vec4.from_cvec((<vec4_f&>(<vec4>self).cvec) / (<const double>other))
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec4, otype))
 
@@ -258,6 +256,7 @@ cdef class vec4:
         if self.length <= self.epsilon:
             raise ZeroDivisionError("divide by zero");
         self.cvec.normalize(self.cvec)
+        return self
 
     def max(self):
         '''Return component with maximum value'''
