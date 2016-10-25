@@ -491,6 +491,7 @@ cdef class mat3:
         '''Invert this matrix in place'''
         self.checkViews()
         self.cvec.inverse(self.cvec)
+        return self
 
     def transposed(mat3 self):
         '''Returns a copy of this matrix transpose'''
@@ -500,16 +501,19 @@ cdef class mat3:
         '''Transpose this matrix in place'''
         self.checkViews()
         self.cvec.transpose(self.cvec)
+        return self
 
     def scale(mat3 self, vec3 s):
         '''Scale this matrix for "s"'''
         self.checkViews()
         self.cvec.scale(s.cvec)
+        return self
 
     def rotate(mat3 self, double angle, vec3 axis):
         '''Rotate this matrix'''
         self.checkViews()
         self.cvec.rotate(angle, axis.cvec)
+        return self
 
     def decompose(mat3 self):
         '''Decompose this matrix into a mat3 for rotation and a

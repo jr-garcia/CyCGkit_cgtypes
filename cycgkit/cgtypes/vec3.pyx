@@ -85,7 +85,6 @@ cdef class vec3:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __truediv__(self, other not None):
-        cdef vec3_f res
         cdef type otype = type(other)
         if type(self) is not vec3 and otype is vec3:
             raise TypeError('vec3 in the right not supported')
@@ -93,8 +92,7 @@ cdef class vec3:
             if other == 0:
                 raise ZeroDivisionError("can't divide by 0")
             else:
-                res = (<vec3_f&>(<vec3>self).cvec) / (<const double>other)
-                return vec3(res[0], res[1], res[2])
+                return vec3.from_cvec((<vec3_f&>(<vec3>self).cvec) / (<const double>other))
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec3, otype))
 
@@ -272,6 +270,7 @@ cdef class vec3:
         if self.length <= self.epsilon:
             raise ZeroDivisionError("divide by zero");
         self.cvec.normalize(self.cvec)
+        return self
 
     def ortho(self):
         '''Return a vector that's perpendicular to this'''

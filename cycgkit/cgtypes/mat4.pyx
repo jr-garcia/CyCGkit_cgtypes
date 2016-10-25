@@ -434,6 +434,7 @@ cdef class mat4:
         '''Invert this matrix in place'''
         self.checkViews()
         self.cvec.inverse(self.cvec)
+        return self
 
     def transposed(mat4 self):
         '''Returns a copy of this matrix transpose'''
@@ -443,16 +444,19 @@ cdef class mat4:
         '''Transpose this matrix in place'''
         self.checkViews()
         self.cvec = self.cvec.transpose()
+        return self
 
     def scale(mat4 self, vec3 s):
         '''Scale this matrix for "s"'''
         self.checkViews()
         self.cvec.scale(s.cvec)
+        return self
 
     def rotate(mat4 self, double angle, vec3 axis):
         '''Rotate this matrix'''
         self.checkViews()
         self.cvec.rotate(angle, axis.cvec)
+        return self
 
     def decompose(mat4 self):
         '''Decompose this matrix into a mat4 for rotation, a

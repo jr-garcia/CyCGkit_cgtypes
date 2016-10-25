@@ -124,5 +124,25 @@ class test(TestCase):
         except AssertionError:
             return
 
+    def test_SameReturnRotate(self):
+        a = self.cgm.rotate(0.5, self.cgvec3)
+        b = self.cym.rotate(0.5, self.cyvec3)
+        self.assertEqual(a, b)
+
+    def test_SameReturnScale(self):
+        a = self.cgm.scale(self.cgvec3)
+        b = self.cym.scale(self.cyvec3)
+        self.assertEqual(a, b)
+
+    def test_SameReturnTranspose(self):
+        a = self.cgm.transpose()
+        b = self.cym.transpose()
+        self.assertEqual(a, b)
+
+    def test_SameReturnInverse(self):
+        a = self.cgm.inverse()
+        b = self.cym.inverse()
+        self.assertEqual(a, b)
+
 if __name__ == '__main__':
     unittest.main()
