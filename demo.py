@@ -1,12 +1,5 @@
 from __future__ import print_function
 
-try:
-    from ExtensionBuilder import build
-
-    build('./')
-except ImportError as ie:
-    print(str(ie) + ' Used for simpler building of source while testing. Currently unreleased.')
-
 hasNumpy = False
 try:
     from numpy import array, asarray

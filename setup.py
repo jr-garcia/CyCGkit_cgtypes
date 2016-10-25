@@ -1,5 +1,4 @@
-from setuptools import Extension, setup, command
-from Cython.Distutils import build_ext
+from setuptools import Extension, setup
 from Cython.Build import cythonize
 from sys import platform
 from numpy import get_include
@@ -20,7 +19,6 @@ if platform == 'win32':
 elif platform == 'darwin':
     rldirs = []
 else:
-    # incl.extend(['/usr/include/assimp', '/usr/local/include/assimp'])
     rldirs = ["$ORIGIN"]
     extrac.extend(["-w", "-O3"])
 
@@ -29,11 +27,9 @@ setup(
     packages=["cycgkit"],
     ext_modules=cythonize([
         Extension('cycgkit/cgtypes/*', ["cycgkit/cgtypes/*.pyx", './src/vec3.cpp'],
-                  # libraries=["__"],
                   include_dirs=incl,
                   runtime_library_dirs=rldirs,
                   extra_compile_args=extrac,
                   language="c++")
     ]),
-    cmdclass={'build_ext': build_ext},
 )
