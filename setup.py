@@ -1,7 +1,6 @@
 from setuptools import Extension, setup
 from Cython.Build import cythonize
 from sys import platform
-# from numpy import get_include
 
 from distutils.sysconfig import get_config_vars
 import os
@@ -24,9 +23,9 @@ else:
 
 setup(
     name="cycgkit",
-    packages=["cycgkit"],
+    packages=["cycgkit", 'cycgkit.cgtypes'],
     ext_modules=cythonize([
-        Extension('cycgkit/cgtypes/*', ["cycgkit/cgtypes/*.pyx", './src/vec3.cpp'],
+        Extension('cycgkit.cgtypes.*', ["cycgkit/cgtypes/*.pyx", './src/vec3.cpp'],
                   include_dirs=incl,
                   runtime_library_dirs=rldirs,
                   extra_compile_args=extrac,
