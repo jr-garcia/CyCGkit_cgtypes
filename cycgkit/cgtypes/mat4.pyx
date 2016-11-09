@@ -589,3 +589,6 @@ cdef class mat4:
     def getMat3(mat4 self):
         cdef mat3_f ret = self.cvec.getMat3()
         return mat3.from_cvec(ret)
+
+    def __hash__(self):
+        return hash(repr(self))

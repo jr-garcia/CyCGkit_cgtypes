@@ -328,3 +328,6 @@ cdef class vec3:
 
     def sangle(vec3 self, vec3 b, vec3 axis):
         return v3.sangle(self.cvec, b.cvec, axis.cvec)
+
+    def __hash__(self):
+        return hash(repr(self))

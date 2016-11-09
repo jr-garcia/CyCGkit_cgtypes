@@ -80,8 +80,8 @@ class test(TestCase):
         self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
 
     def test_repr(self):
-        cystr = str(self.cym)
-        cgstr = str(self.cgm)
+        cystr = repr(self.cym)
+        cgstr = repr(self.cgm)
         self.assertEqual(cgstr, cystr)
 
     def test_multVec4Left(self):
@@ -152,6 +152,12 @@ class test(TestCase):
     def test_SameReturnTranslation(self):
         a = cg.mat4.translation(self.cgvec3)
         b = cycg.mat4.translation(self.cyvec3)
+        self.assertEqual(a, b)
+
+    @skip
+    def test_Hash(self):
+        a = hash(self.cgm)
+        b = hash(self.cym)  # fixme: find out how to return same value if possible
         self.assertEqual(a, b)
 
 if __name__ == '__main__':

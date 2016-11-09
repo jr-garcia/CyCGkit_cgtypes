@@ -291,6 +291,9 @@ cdef class quat:
     def rotateVec(quat self, vec3 v):
         return vec3.from_cvec(self.cvec.rotateVec(v.cvec))
 
+    def __hash__(self):
+        return hash(repr(self))
+
 def slerp(double t, quat q0, quat q1, bint shortest=False):
     return quat.from_cvec(qu.slerp(t, q0.cvec, q1.cvec, shortest))
 

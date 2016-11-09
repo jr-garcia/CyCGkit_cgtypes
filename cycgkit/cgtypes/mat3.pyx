@@ -578,3 +578,6 @@ cdef class mat3:
 
     def toEulerZYX(self):
         return self.getRot(a=False, b=False, c=False, d=False, e=False, f=True)
+
+    def __hash__(self):
+        return hash(repr(self))

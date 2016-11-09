@@ -289,3 +289,6 @@ cdef class vec4:
     def minAbsIndex(self):
         '''Return index with minimum absolute value'''
         return self.cvec.minAbsIndex()
+
+    def __hash__(self):
+        return hash(repr(self))

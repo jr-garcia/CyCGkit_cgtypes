@@ -5,6 +5,7 @@ import cgkit.cgtypes as cg
 
 try:
     import numpy as np
+
     hasNumpy = True
 except ImportError:
     hasNumpy = False
@@ -70,8 +71,8 @@ class test(TestCase):
         self.assertEqual(self.cgm[index[0], index[1]], self.cym[index[0], index[1]])
 
     def test_repr(self):
-        cystr = str(self.cym)
-        cgstr = str(self.cgm)
+        cystr = repr(self.cym)
+        cgstr = repr(self.cgm)
         self.assertEqual(cgstr, cystr)
 
     def test_multVec3Left(self):
@@ -109,6 +110,13 @@ class test(TestCase):
         a = self.cgm.inverse()
         b = self.cym.inverse()
         self.assertEqual(a, b)
+
+    @skip
+    def test_Hash(self):
+        a = hash(self.cgm)
+        b = hash(self.cym)  # fixme: find out how to return same value if possible
+        self.assertEqual(a, b)
+
 
 if __name__ == '__main__':
     unittest.main()
