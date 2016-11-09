@@ -29,6 +29,11 @@ setup(
                   include_dirs=incl,
                   runtime_library_dirs=rldirs,
                   extra_compile_args=extrac,
+                  language="c++"),
+        Extension('cycgkit.boundingbox', ["cycgkit/boundingbox.pyx", './src/boundingbox.cpp', './src/vec3.cpp'],
+                  include_dirs=incl,
+                  runtime_library_dirs=rldirs,
+                  extra_compile_args=extrac,
                   language="c++")
     ]),
 )

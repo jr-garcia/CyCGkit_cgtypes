@@ -3,6 +3,7 @@
 .idea/
 build/
 /cycgkit/cgtypes/*.cpp
+/cycgkit/*.cpp
 /overrides_test.py
 __pycache__/
 *.py[cod]
