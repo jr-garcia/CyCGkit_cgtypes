@@ -75,14 +75,14 @@ cdef class vec3:
             res = <vec3_f&>self.cvec * (<double>other)
             return vec3(res[0], res[1], res[2])
         elif otype == vec3:
-            res2 = <vec3_f&>self.cvec * (<vec3_f&>(<vec3>other).cvec)
+            res2 = <vec3_f&>self.cvec * (<vec3>other).cvec
             return res2
         elif otype is mat3:
             return vec3.from_cvec(self.mat3Mul((<mat3>other).cvec))
         elif otype is mat4:
             return vec3.from_cvec(self.mat4Mul((<mat4>other).cvec))
         else:
-            raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for *: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __truediv__(self, other not None):
         cdef type otype = type(other)
@@ -94,7 +94,7 @@ cdef class vec3:
             else:
                 return vec3.from_cvec((<vec3_f&>(<vec3>self).cvec) / (<const double>other))
         else:
-            raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for /: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __div__(self, other not None):
         return self.__truediv__(other)
@@ -105,9 +105,9 @@ cdef class vec3:
         cdef type otype = type(other)
         if otype is vec3:
             res = (<vec3_f&>(<vec3>self).cvec) ^ (<vec3_f&>(<vec3>other).cvec)
-            return vec3(res[0], res[1], res[2])
+            return vec3.from_cvec(res)
         else:
-            raise TypeError("unsupported operand type(s) for ^: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for ^: \'{}\' and \'{}\'".format(vec3, otype))
 
     def cross(vec3 self, other not None):
         """ Return self.cross(other). """
@@ -115,9 +115,9 @@ cdef class vec3:
         cdef type otype = type(other)
         if otype is vec3:
             res = (<vec3_f&>(<vec3>self).cvec).cross(<vec3_f&>(<vec3>other).cvec)
-            return vec3(res[0], res[1], res[2])
+            return vec3.from_cvec(res)
         else:
-            raise TypeError("unsupported operand type(s) for ^: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for ^: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __mod__(vec3 self, other not None):
         """ Return self%value. """
@@ -126,10 +126,10 @@ cdef class vec3:
         if otype in [float, int]:
             res = <vec3_f&>self.cvec % (<double>other)
         elif otype == vec3:
-            res = <vec3_f&>self.cvec % (<vec3_f&>(<vec3>other).cvec)
+            res = <vec3_f&>self.cvec % (<vec3>other).cvec
         else:
-            raise TypeError("unsupported operand type(s) for %: \'{}\' and \'{}\'".format(vec3, otype))
-        return vec3(res[0], res[1], res[2])
+            raise TypeError("unsupported operand types for %: \'{}\' and \'{}\'".format(vec3, otype))
+        return vec3.from_cvec(res)
 
     def __neg__(self):
         cdef vec3 res = vec3()
@@ -144,7 +144,7 @@ cdef class vec3:
             res = (<vec3_f&>(<vec3>self).cvec) - (<vec3_f&>(<vec3>other).cvec)
             return vec3(res[0], res[1], res[2])
         else:
-            raise TypeError("unsupported operand type(s) for -: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for -: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __add__(self, other not None):
         """ Return self+value. """
@@ -154,7 +154,7 @@ cdef class vec3:
             res = (<vec3_f&>(<vec3>self).cvec) + (<vec3_f&>(<vec3>other).cvec)
             return vec3(res[0], res[1], res[2])
         else:
-            raise TypeError("unsupported operand type(s) for +: \'{}\' and \'{}\'".format(vec3, otype))
+            raise TypeError("unsupported operand types for +: \'{}\' and \'{}\'".format(vec3, otype))
 
     def __richcmp__(vec3 self, vec3 other, int f):
         if f == 0:
