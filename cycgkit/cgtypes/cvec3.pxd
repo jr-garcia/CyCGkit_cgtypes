@@ -42,9 +42,9 @@ cdef extern from "vec3.h" namespace 'support3d' nogil:
         vec3[T] operator*(const T r) const        # vec = vec * scalar
         T operator*(const vec3[T]& b) const       # scalar = vec * vec (dot prod.)
         vec3[T] operator^(const vec3[T]& b) const # vec = vec * vec (cross prod.)
-        vec3[T] operator/(const T r) except +        # vec = vec / scalar
-        vec3[T] operator%(const T b) const        # vec = vec % scalar (each component)
-        vec3[T] operator%(const vec3[T]& b) const # vec = vec % vec
+        vec3[T] operator/(const T r) except+        # vec = vec / scalar
+        vec3[T] operator%(const T b) except+        # vec = vec % scalar (each component)
+        vec3[T] operator%(const vec3[T]& b) except+ # vec = vec % vec
 
         bool operator==(const vec3[T]& b) const
         bool operator!=(const vec3[T]& b) const

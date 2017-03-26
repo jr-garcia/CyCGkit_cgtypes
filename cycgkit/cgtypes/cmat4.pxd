@@ -56,9 +56,9 @@ cdef extern from "mat4.h" namespace 'support3d' nogil:
         vec4[T] operator*(const vec4[T]& v) const   # vector = matrix * vector
         mat4[T] operator*(const T s) const          # matrix = matrix * scalar
 
-        mat4[T] operator/(const T s) const          # matrix = matrix / scalar
-        mat4[T] operator%(const T b) const          # mat = mat % scalar (each component)
-        mat4[T] operator%(const mat4[T]& b) const   # mat = mat % mat
+        mat4[T] operator/(const T s) except+          # matrix = matrix / scalar
+        mat4[T] operator%(const T b) except+          # mat = mat % scalar (each component)
+        mat4[T] operator%(const mat4[T]& b) except+   # mat = mat % mat
 
         bool operator==(const mat4[T]& A) const     # matrix == matrix
         bool operator!=(const mat4[T]& A) const     # matrix == matrix
@@ -69,8 +69,8 @@ cdef extern from "mat4.h" namespace 'support3d' nogil:
         T determinant() const
 
         # Inversion (*this is never changed, unless dest = *this)
-        mat4[T]  inverse() const
-        mat4[T]& inverse(mat4[T]& dest) const
+        mat4[T]  inverse() except+
+        mat4[T]& inverse(mat4[T]& dest) except+
 
         # Transposition
         mat4[T]  transpose() const

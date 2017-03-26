@@ -69,9 +69,9 @@ cdef extern from "mat3.h" namespace 'support3d' nogil:
         vec3[T] operator*(const vec3[T]& v) const   # vector = matrix * vector
         mat3[T] operator*(const T s) const          # matrix = matrix * scalar
 
-        mat3[T] operator/(const T s) const          # matrix = matrix / scalar
-        mat3[T] operator%(const T b) const          # mat = mat % scalar (each component)
-        mat3[T] operator%(const mat3[T]& b) const   # mat = mat % mat
+        mat3[T] operator/(const T s) except+          # matrix = matrix / scalar
+        mat3[T] operator%(const T b) except+          # mat = mat % scalar (each component)
+        mat3[T] operator%(const mat3[T]& b) except+   # mat = mat % mat
 
         bool operator==(const mat3[T]& A) const     # matrix == matrix
         bool operator!=(const mat3[T]& A) const     # matrix == matrix
@@ -82,8 +82,8 @@ cdef extern from "mat3.h" namespace 'support3d' nogil:
         T determinant() const
 
         # Inversion (*this is never changed, unless dest = *this)
-        mat3[T]  inverse() const
-        mat3[T]& inverse(mat3[T]& dest) const
+        mat3[T]  inverse() except+
+        mat3[T]& inverse(mat3[T]& dest) except+
 
         # Transposition
         mat3[T]  transpose() const
