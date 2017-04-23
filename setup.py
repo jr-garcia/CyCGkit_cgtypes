@@ -23,7 +23,7 @@ else:
 
 setup(
     name="cycgkit",
-    packages=["cycgkit", 'cycgkit.cgtypes', 'cycgkit.boundingbox'],
+    packages=["cycgkit", 'cycgkit.cgtypes'],
     ext_modules=cythonize([
         Extension('cycgkit.cgtypes.*', ["cycgkit/cgtypes/*.pyx", './src/vec3.cpp'],
                   include_dirs=incl,
