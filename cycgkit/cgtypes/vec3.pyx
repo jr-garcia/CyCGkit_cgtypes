@@ -66,21 +66,24 @@ cdef class vec3:
 
         return ret
 
-    def __mul__(vec3 self, other):
+    def __mul__(self, other):
         cdef vec3_f res
         cdef mat3_f M
         cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
             res = <vec3_f&>self.cvec * (<double>other)
-            return vec3(res[0], res[1], res[2])
+            return vec3.from_cvec(res)
+        elif type(self) in [float, int]:
+            res = (<vec3_f&>(<vec3>other).cvec) * (<double>self)
+            return vec3.from_cvec(res)
         elif otype == vec3:
-            res2 = <vec3_f&>self.cvec * (<vec3>other).cvec
+            res2 = (<vec3_f&>(<vec3>self).cvec) * (<vec3>other).cvec
             return res2
         elif otype is mat3:
-            return vec3.from_cvec(self.mat3Mul((<mat3>other).cvec))
+            return vec3.from_cvec((<vec3>self).mat3Mul((<mat3>other).cvec))
         elif otype is mat4:
-            return vec3.from_cvec(self.mat4Mul((<mat4>other).cvec))
+            return vec3.from_cvec((<vec3>self).mat4Mul((<mat4>other).cvec))
         else:
             raise TypeError("unsupported operand types for *: \'{}\' and \'{}\'".format(vec3, otype))
 

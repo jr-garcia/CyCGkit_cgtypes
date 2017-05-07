@@ -58,18 +58,21 @@ cdef class vec4:
                       res.x * r1.z + res.y * r2.z + res.z * r3.z + res.w * r4.z,
                       res.x * r1.w + res.y * r2.w + res.z * r3.w + res.w * r4.w)
 
-    def __mul__(vec4 self, other):
+    def __mul__(self, other):
         cdef vec4_f res
         cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec4_f&>self.cvec * (<double>other)
-            return vec4(res[0], res[1], res[2], res[3])
+            res = <vec4_f&>(<vec4>self).cvec * (<double>other)
+            return vec4.from_cvec(res)
+        elif type(self) in [float, int]:
+            res = (<vec4_f&>(<vec4>other).cvec) * (<double>self)
+            return vec4.from_cvec(res)
         elif otype == vec4:
-            res2 = <vec4_f&>self.cvec * (<vec4_f&>(<vec4>other).cvec)
+            res2 = (<vec4_f&>(<vec4>self).cvec) * (<vec4_f&>(<vec4>other).cvec)
             return res2
         elif otype is mat4:
-            return vec4.from_cvec(self.mat4Mul((<mat4>other).cvec))
+            return vec4.from_cvec((<vec4>self).mat4Mul((<mat4>other).cvec))
         else:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(vec4, otype))
 
