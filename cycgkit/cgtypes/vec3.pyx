@@ -72,7 +72,7 @@ cdef class vec3:
         cdef double res2
         cdef type otype = type(other)
         if otype in [float, int]:
-            res = <vec3_f&>self.cvec * (<double>other)
+            res = (<vec3_f&>(<vec3>self).cvec) * (<double>other)
             return vec3.from_cvec(res)
         elif type(self) in [float, int]:
             res = (<vec3_f&>(<vec3>other).cvec) * (<double>self)
