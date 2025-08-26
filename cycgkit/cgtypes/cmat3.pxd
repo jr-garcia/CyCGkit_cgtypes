@@ -1,4 +1,4 @@
-from cvec3 cimport vec3
+from .cvec3 cimport vec3
 
 ctypedef bint bool
 

@@ -1,6 +1,6 @@
-from cvec3 cimport vec3
-from cvec4 cimport vec4
-from cmat3 cimport mat3
+from .cvec3 cimport vec3
+from .cvec4 cimport vec4
+from .cmat3 cimport mat3
 
 ctypedef bint bool
 

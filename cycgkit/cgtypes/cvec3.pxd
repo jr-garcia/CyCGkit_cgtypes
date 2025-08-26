@@ -83,13 +83,13 @@ cdef extern from "vec3.h" namespace 'support3d' nogil:
 
         ########## Alternatives to operators ##########/
 
-    inline vec3[double]& add(const vec3[double]& a, const vec3[double]& b)   # this = a+b
-    inline vec3[double]& neg(const vec3[double]& a)                     # this = -a
-    inline vec3[double]& sub(const vec3[double]& a, const vec3[double]& b)   # this = a-b
-    inline vec3[double]& mul(const vec3[double]& a, const double r)          # this = a*r
-    inline vec3[double]& div(const vec3[double]& a, const double r)          # this = a/r
-    #inline vec3[double]& cross(const vec3[double]& a, const vec3[double]& b) # this = a*b
-    inline vec3[double] mul 'operator*'(const double r,const vec3[double]& v)
+    vec3[double]& add(const vec3[double]& a, const vec3[double]& b)   # this = a+b
+    vec3[double]& neg(const vec3[double]& a)                     # this = -a
+    vec3[double]& sub(const vec3[double]& a, const vec3[double]& b)   # this = a-b
+    vec3[double]& mul(const vec3[double]& a, const double r)          # this = a*r
+    vec3[double]& div(const vec3[double]& a, const double r)          # this = a/r
+    #vec3[double]& cross(const vec3[double]& a, const vec3[double]& b) # this = a*b
+    vec3[double] mul 'operator*'(const double r,const vec3[double]& v)
 
-    inline double angle(const vec3[double] &a, const vec3[double] &b) except+
-    inline double sangle(const vec3[double] &a, const vec3[double] &b, const vec3[double] &axis) except+
+    double angle(const vec3[double] &a, const vec3[double] &b) except+
+    double sangle(const vec3[double] &a, const vec3[double] &b, const vec3[double] &axis) except+

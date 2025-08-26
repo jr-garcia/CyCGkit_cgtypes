@@ -1,4 +1,4 @@
-cimport cvec3 as v3
+from . cimport cvec3 as v3
 
 
 cdef class vec3:
@@ -81,9 +81,9 @@ cdef class vec3:
             res2 = (<vec3_f&>(<vec3>self).cvec) * (<vec3>other).cvec
             return res2
         elif otype is mat3:
-            return vec3.from_cvec((<vec3>self).mat3Mul((<mat3>other).cvec))
+            return vec3.from_cvec((<vec3>self).mat3Mul((<mat3>other).cmat))
         elif otype is mat4:
-            return vec3.from_cvec((<vec3>self).mat4Mul((<mat4>other).cvec))
+            return vec3.from_cvec((<vec3>self).mat4Mul((<mat4>other).cmat))
         else:
             raise TypeError("unsupported operand types for *: \'{}\' and \'{}\'".format(vec3, otype))
 

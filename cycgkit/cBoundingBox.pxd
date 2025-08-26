@@ -1,6 +1,6 @@
 ctypedef bint bool
-from cgtypes.cvec3 cimport vec3
-from cgtypes.cmat4 cimport mat4
+from .cgtypes.cvec3 cimport vec3
+from .cgtypes.cmat4 cimport mat4
 
 ctypedef vec3[double] vec3d
 ctypedef mat4[double] mat4d

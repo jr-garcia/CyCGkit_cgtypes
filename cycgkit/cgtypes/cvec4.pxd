@@ -65,8 +65,8 @@ cdef extern from "vec4.h" namespace 'support3d' nogil:
 
     ########## Alternatives to operators ##########/
 
-    inline vec4[double]& add(const vec4[double]& a, const vec4[double]& b)   # this = a+b
-    inline vec4[double]& sub(const vec4[double]& a, const vec4[double]& b)   # this = a-b
-    inline vec4[double]& neg(const vec4[double]& a)                     # this = -a
-    inline vec4[double]& mul(const vec4[double]& a, constdoubler)          # this = a*r
-    inline vec4[double]& div(const vec4[double]& a, constdoubler)          # this = a/r
+    vec4[double]& add(const vec4[double]& a, const vec4[double]& b)   # this = a+b
+    vec4[double]& sub(const vec4[double]& a, const vec4[double]& b)   # this = a-b
+    vec4[double]& neg(const vec4[double]& a)                     # this = -a
+    vec4[double]& mul(const vec4[double]& a, constdoubler)          # this = a*r
+    vec4[double]& div(const vec4[double]& a, constdoubler)          # this = a/r

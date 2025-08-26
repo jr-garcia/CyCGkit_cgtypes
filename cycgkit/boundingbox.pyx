@@ -1,8 +1,8 @@
-cimport cBoundingBox as cbb
-from cgtypes.vec3 cimport vec3
-from cgtypes cimport cvec3
-from cgtypes.mat4 cimport mat4
-from cgtypes cimport cmat4
+from . cimport cBoundingBox as cbb
+from .cgtypes.vec3 cimport vec3
+from .cgtypes cimport cvec3
+from .cgtypes.mat4 cimport mat4
+from .cgtypes cimport cmat4
 from cython.operator cimport dereference as deref
 
 ctypedef fused T:
@@ -98,7 +98,7 @@ cdef class BoundingBox:
         '''
         cdef cbb.BoundingBox bb
         cdef cbb.vec3d min, max
-        self.thisptr.transform(M.cvec, bb)
+        self.thisptr.transform(M.cmat, bb)
         bb.getBounds(min, max)
         return BoundingBox(vec3.from_cvec(min), vec3.from_cvec(max))
 

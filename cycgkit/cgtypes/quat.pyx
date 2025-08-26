@@ -261,15 +261,15 @@ cdef class quat:
     @staticmethod
     def fromMat(anymat mat):
         cdef quat_f res = quat_f()
-        return quat.from_cvec(res.fromMat(mat.cvec))
+        return quat.from_cvec(res.fromMat(mat.cmat))
 
     def toMat3(quat self):
         cdef mat3_f ret = self.cvec.toMat3()
-        return mat3.from_cvec(ret)
+        return mat3.from_cmat(ret)
 
     def toMat4(quat self):
         cdef mat4_f ret = self.cvec.toMat4()
-        return mat4.from_cvec(ret)
+        return mat4.from_cmat(ret)
 
     def toAngleAxis(quat self):
         cdef double angle = 0

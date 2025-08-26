@@ -1,13 +1,13 @@
-cimport cmat3 as m3
+from . cimport cmat3 as m3
 ctypedef m3.mat3[double] mat3_f
 
-cimport cvec3 as v3
+from . cimport cvec3 as v3
 ctypedef v3.vec3[double] vec3_f
 
-from vec3 cimport vec3
+from .vec3 cimport vec3
 
 cdef class mat3:
-    cdef mat3_f cvec
+    cdef mat3_f cmat
     cdef unsigned short items
     cdef unsigned int view_count
     cdef bint isTransposed
@@ -27,7 +27,7 @@ cdef class mat3:
     cdef mat3_f from_9double(object it9)
 
     @staticmethod
-    cdef mat3 from_cvec(mat3_f cvec)
+    cdef mat3 from_cmat(mat3_f cmat)
 
     cdef checkViews(self)
 
