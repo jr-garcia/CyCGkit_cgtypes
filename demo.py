@@ -1,12 +1,8 @@
-from __future__ import print_function
-
-hasNumpy = False
 try:
     from numpy import array, asarray
-
     hasNumpy = True
 except ImportError:
-    pass
+    hasNumpy = False
 
 print('\n###################################   VEC 3   ###################################')
 from cycgkit.cgtypes import vec3
@@ -272,16 +268,26 @@ print('getRow 0 / setRow 0:')
 vec = vec3()
 m.getRow(0, vec)
 vec[0, 2] = 4
+print(f"setrow 0 from vec {vec}:")
 m.setRow(0, vec)
+print(m)
+print(f"setrow 2 from floats (9, 8, 7):")
+m.setRow(2, 9, 8, 7)
 print(m)
 print('get row 0 as (a, b, c):', m.getRow(0))
 
-print('getColumn 2 / setColumn 2:')
+print('getColumn 2 , setColumn 2:')
 # vec = vec3()
 m.getColumn(2, vec)
 vec[0, 2] = -6
-m.setColumn(2, vec)
+print(f"set column 0 from vec {vec}:")
+m.setColumn(0, vec)
 print(m)
+print(f"set column 2 from floats (9, 8, 5):")
+m.setColumn(2, 9, 8, 5)
+print(m)
+print('get row 0 as (a, b, c):', m.getRow(0))
+
 print('get Column 2 as (a, b, c):', m.getColumn(2))
 
 print('getDiag / setDiag:')

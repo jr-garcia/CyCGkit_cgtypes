@@ -1,18 +1,18 @@
 import unittest
 from unittest import TestCase, skip, skipIf
 import cycgkit.cgtypes as cycg
-import cgkit.cgtypes as cg
 from cycgkit import boundingbox as cybb
-from cgkit import boundingbox as cgbb
 
 try:
-    import numpy as np
-
-    hasNumpy = True
+    import cgkit.cgtypes as cg
+    from cgkit import boundingbox as cgbb
 except ImportError:
-    hasNumpy = False
+    pass
+
+from _skip_helper import skip_if_package_missing
 
 
+@skip_if_package_missing('cgkit')
 class test(TestCase):
     def setUp(self):
         a = 0, 1.6, 2, 3, 4.977, 5, 6, .007, 8, 0, 1.6, 2, 3, 4.977, 5, 6
@@ -46,6 +46,7 @@ class test(TestCase):
 
     def test_nonEmpty(self):
         self.assertTrue(self.cyb.isEmpty() == self.cgb.isEmpty())
+
 
 if __name__ == '__main__':
     unittest.main()
