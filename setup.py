@@ -54,7 +54,7 @@ setup(
         description=DESCRIPTION,
         long_description=getLongDescription(),
         long_description_content_type='text/markdown',
-        url='https://github.com/jr-garcia/cyCGkit_minimal',
+        url='https://github.com/jr-garcia/CyCGkit_cgtypes',
         license='MIT',
         classifiers=['Development Status :: 5 - Production/Stable',
                      'Intended Audience :: Developers',
