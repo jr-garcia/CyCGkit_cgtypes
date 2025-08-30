@@ -118,9 +118,9 @@ jobs:
       id-token: write
     steps:
       - uses: actions/download-artifact@v5
-          with:
-            name: artifact
-            path: ${{ github.workspace }}/dist
+        with:
+          name: artifact
+          path: ${{ github.workspace }}/dist
 #      - name: Publish package distributions to PyPI
 #        uses: pypa/gh-action-pypi-publish@v1.4.2
       - name: Publish package distributions to TestPyPI
