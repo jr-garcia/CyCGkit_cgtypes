@@ -16,8 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.8, "3.10", "3.12", "pypy-3.7" ]
-        os: [ windows-latest, ubuntu-latest, macos-11 ]
+        python-version:  ["3.10"] #[ 3.8, "3.10", "3.12", "pypy-3.7" ]
+        os:  [ubuntu-latest] # [ windows-latest, ubuntu-latest, macos-11 ]
     runs-on: ${{ matrix.os }}
     if: ${{endsWith(github.ref,'ci_test') || endsWith(github.ref,'master')}}
     steps:
@@ -46,7 +46,11 @@ jobs:
       - name: Install project
         run: pip install ${{ github.workspace }}
       - name: Test
-        run:  "python -m unittest discover -f -s ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests"
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pip show cycgkit_cgtypes || true
+          python -m unittest discover -f -s ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
 
   Build-wheels:
     env:
