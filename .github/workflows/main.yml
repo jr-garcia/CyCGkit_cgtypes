@@ -50,9 +50,10 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           pip install "numpy==2.2.6"
+          cd ~
+          pip list
           dir
-          cd ..
-          python -c "from cycgkit.cgtypes import vec3;print(vec3(1))"
+          python -c "from cycgkit.cgtypes import vec3;print(f'{vec3}={vec3(1)}')"
           python -m unittest discover -f -s ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
 
   Build-wheels:
