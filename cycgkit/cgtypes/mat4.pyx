@@ -238,10 +238,11 @@ cdef class mat4:
 
     def __setitem__(mat4 self, object key, object value):
         cdef type otype = type(key)
-        self.checkViews()
         cdef list rows = []
         cdef int r
         cdef vec4_f nval
+        
+        self.checkViews()
 
         if otype is int:
             if key > self.nrows - 1:
@@ -296,9 +297,9 @@ cdef class mat4:
         def __get__(self):
             return sizeof(self.cmat)
 
-    def ortho(self, inplace=False):
+    def ortho(self, bint inplace=False):
         '''
-        Return this matrix's ortho if inplace=False.
+        Return this matrix's ortho if inplace==False.
         or Apply ortho to this matrix in place
         '''
         if inplace:
@@ -347,8 +348,8 @@ cdef class mat4:
             self.cmat = self.cmat.transpose()
             self.isTransposed = False
 
-    def at(mat4 self, short i, short j):
-        return self.cmat.at(i, j)
+#    def at(mat4 self, short i, short j):
+#        return self.cmat.at(i, j)
 
     @staticmethod
     def identity():
@@ -360,30 +361,46 @@ cdef class mat4:
     def setIdentity(mat4 self):
         self.checkViews()
         self.cmat.setIdentity()
+        return self
 
-    def setRow(mat4 self, int row, vec4 val):
+    def setRow(mat4 self, int row, *args):
+        cdef double a, b, c, d
         self.checkViews()
-        self.cmat.setRow(row, val.cvec)
+        if len(args) == 4 and all(type(arg) in [float, int] for arg in args):
+            a, b, c, d = args
+            self.cmat.setRow(row, a, b, c, d)
+            return self
+        elif len(args) == 1 and isinstance(args[0], vec4):
+            self.cmat.setRow(row, (<vec4>args[0]).cvec)
+            return self
+        else:
+            raise TypeError("setRow() takes either a vec4 or 4 floats.")
 
-    def setRow(mat4 self, short row, const double a, const double b, const double c, const double d):
+    def setColumn(mat4 self, int col, *args):
+        cdef double a, b, c, d
         self.checkViews()
-        self.cmat.setRow(row, a, b, c, d)
+        if len(args) == 1 and type(args[0]) == vec4:
+            self.cmat.setColumn(col, (<vec4>args[0]).cvec)
+            return self
+        elif len(args) == 4 and all((isinstance(arg, int) or isinstance(arg, float)) for arg in args):
+            a, b, c, d = args
+            self.cmat.setColumn(col, a, b, c, d)
+            return self
+        else:
+            raise TypeError("setColumn() takes either a vec4 or 4 floats.")
 
-    def setColumn(mat4 self, int col, vec4 val):
+    def setDiag(mat4 self, *args):
+        cdef double a, b, c, d
         self.checkViews()
-        self.cmat.setColumn(col, val.cvec)
-
-    def setColumn(mat4 self, short col, const double a, const double b, const double c, const double d):
-        self.checkViews()
-        self.cmat.setColumn(col, a, b, c, d)
-
-    def setDiag(mat4 self, vec4 val):
-        self.checkViews()
-        self.cmat.setDiag(val.cvec)
-
-    def setDiag(mat4 self, const double a, const double b, const double c, const double d):
-        self.checkViews()
-        self.cmat.setDiag(a, b, c, d)
+        if len(args) == 4 and all((isinstance(arg, int) or isinstance(arg, float)) for arg in args):
+            a, b, c, d = args
+            self.cmat.setDiag(a, b, c, d)
+            return self
+        elif len(args) == 1 and isinstance(args[0], vec4):
+            self.cmat.setDiag((<vec4>args[0]).cvec)
+            return self
+        else:
+            raise TypeError("Invalid arguments")
 
     def getRow(mat4 self, short i, vec4 dest=None):
         cdef double a, b, c, d
@@ -412,11 +429,10 @@ cdef class mat4:
             self.cmat.getDiag(a, b, c, d)
             return a, b, c, d
 
-    @staticmethod
-    def rotation(double angle, vec3 axis):
-        cdef mat4 res = mat4()
-        res.cmat.setRotation(angle, axis.cvec)
-        return res
+    def setRotation(mat3 self, double angle, vec3 axis):
+        self.checkViews()
+        self.cmat.setRotation(angle, axis.cvec)
+        return self
 
     @staticmethod
     def scaling(vec3 scale):
@@ -425,10 +441,16 @@ cdef class mat4:
         res.cmat.setScaling(scale.cvec)
         return res
 
+    def setScaling(mat4 self, vec3 scale):
+      '''Set this matrix to "scale"'''
+      self.checkViews()
+      self.cmat.setScaling(scale.cvec)
+      return self
+
     def determinant(mat4 self):
         return self.cmat.determinant()
 
-    def inversed(mat4 self):
+    def inverted(mat4 self):
         '''Returns a copy of this matrix inverse'''
         return mat4.from_cmat(self.cmat.inverse())
 
@@ -482,76 +504,78 @@ cdef class mat4:
         self.cmat.decompose(t, rot, scale)
         return vec3.from_cvec(t), mat4.from_cmat(rot), vec3.from_cvec(scale)
 
-    ########################  MAT4 METHODS  ########################
+    def setOrthographic(mat4 self, double left, double right, double bottom, double top, double nearval, double farval):
+        self.checkViews()
+        self.cmat.setOrthographic(left, right, bottom, top, nearval, farval)
+        return self
 
-    @staticmethod
-    def orthographic(double left, double right, double bottom, double top, double nearval, double farval):
-        cdef mat4 ret = mat4()
-        ret.cmat.setOrthographic(left, right, bottom, top, nearval, farval)
-        return ret
+    def setFrustum(mat4 self, double left, double right, double bottom, double top, double near_, double far_):
+        self.checkViews()
+        self.cmat.setFrustum(left, right, bottom, top, near_, far_)
+        return self
 
-    @staticmethod
-    def frustum(double left, double right, double bottom, double top, double near_, double far_):
-        cdef mat4 ret = mat4()
-        ret.cmat.setFrustum(left, right, bottom, top, near_, far_)
-        return ret
+    def setPerspective(mat4 self, double fovy, double aspect, double near_, double far_):
+        self.checkViews()
+        self.cmat.setPerspective(fovy, aspect, near_, far_)
+        return self
 
-    @staticmethod
-    def perspective(double fovy, double aspect, double near_, double far_):
-        cdef mat4 ret = mat4()
-        ret.cmat.setPerspective(fovy, aspect, near_, far_)
-        return ret
-
-    @staticmethod
-    def lookAt(vec3 pos, vec3 target, vec3 up=None):
-        # converted from original CGkit.
-        cdef mat4 ret = mat4()
-        cdef vec4_f r1 = vec4_f(), r2 = vec4_f(), r3 = vec4_f(), r4 = vec4_f()
+    def setLookAt(mat4 self, vec3 pos, vec3 target, vec3 up=None):
         if up is None:
             up = vec3(0,0,1)
-            
-        cdef vec3_f dir = target.cvec - pos.cvec
-        cdef vec3_f vup = vec3_f(up.cvec)
-        cdef vec3_f right
-        
-        dir.normalize(dir)
-        vup.normalize(vup)
-        vup -= v3.mul((vup * dir), dir)
-        
-        try:
-            vup.normalize(vup)
-        except:
-            # We're looking along the up direction, so choose
-            # an arbitrary direction that is perpendicular to dir
-            # as new up.
-            vup = dir.ortho()
-            
-        right = vup.cross(dir);
-        right.normalize(right);
+        self.checkViews()
+        self.cmat.setLookAt(pos.cvec, target.cvec, up.cvec)
+        return self
 
-        r1.x = right.x;
-        r2.x = right.y;
-        r3.x = right.z;
-        r4.x = 0.0;
-        r1.y = vup.x;
-        r2.y = vup.y;
-        r3.y = vup.z;
-        r4.y = 0.0;
-        r1.z = dir.x;
-        r2.z = dir.y;
-        r3.z = dir.z;
-        r4.z = 0.0;
-        r1.w = pos.x;
-        r2.w = pos.y;
-        r3.w = pos.z;
-        r4.w = 1.0;
-
-        ret.cmat.setRow(0, r1)
-        ret.cmat.setRow(1, r2)
-        ret.cmat.setRow(2, r3)
-        ret.cmat.setRow(3, r4)
-
-        return ret
+#    @staticmethod
+#    def lookAt(vec3 pos, vec3 target, vec3 up=None):
+#        # converted from original CGkit.
+#        cdef mat4 ret = mat4()
+#        cdef vec4_f r1 = vec4_f(), r2 = vec4_f(), r3 = vec4_f(), r4 = vec4_f()
+#        if up is None:
+#            up = vec3(0,0,1)
+#
+#        cdef vec3_f dir = target.cvec - pos.cvec
+#        cdef vec3_f vup = vec3_f(up.cvec)
+#        cdef vec3_f right
+#
+#        dir.normalize(dir)
+#        vup.normalize(vup)
+#        vup -= v3.mul((vup * dir), dir)
+#
+#        try:
+#            vup.normalize(vup)
+#        except:
+#            # We're looking along the up direction, so choose
+#            # an arbitrary direction that is perpendicular to dir
+#            # as new up.
+#            vup = dir.ortho()
+#
+#        right = vup.cross(dir)
+#        right.normalize(right)
+#
+#        r1.x = right.x
+#        r2.x = right.y
+#        r3.x = right.z
+#        r4.x = 0.0
+#        r1.y = vup.x
+#        r2.y = vup.y
+#        r3.y = vup.z
+#        r4.y = 0.0
+#        r1.z = dir.x
+#        r2.z = dir.y
+#        r3.z = dir.z
+#        r4.z = 0.0
+#        r1.w = pos.x
+#        r2.w = pos.y
+#        r3.w = pos.z
+#        r4.w = 1.0
+#
+#        ret.cmat.setRow(0, r1)
+#        ret.cmat.setRow(1, r2)
+#        ret.cmat.setRow(2, r3)
+#        ret.cmat.setRow(3, r4)
+#
+#        return ret
 
     @staticmethod
     def lookAtRH(vec3 eye, vec3 target, vec3 up=None):
@@ -583,10 +607,11 @@ cdef class mat4:
             return ViewMatrix  # * mat4.translation(eye)
 
         except Exception as ex:
-            raise RuntimeError("cycgkit's lookAtRH: " + str(ex))
+            raise RuntimeError("Exception in lookAtRH: " + str(ex))
 
     def setMat3(mat4 self, mat3 m3):
          self.cmat.setMat3(m3.cmat)
+         return self
 
     def getMat3(mat4 self):
         cdef mat3_f ret = self.cmat.getMat3()

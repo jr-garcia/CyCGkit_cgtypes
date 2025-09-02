@@ -8,7 +8,6 @@ cdef class vec3:
         self.items = 3
         if args.__len__() == 0:
             self.cvec = vec3_f()
-            self.epsilon = self.cvec.epsilon
             return
 
         if getattr(args[0], '__getitem__', None):
@@ -28,7 +27,6 @@ cdef class vec3:
             raise TypeError('Wrong number of arguments. Expected {} got {}'.format(self.items, len(argsl)))
 
         self.cvec = vec3_f(x, y, z)
-        self.epsilon = self.cvec.epsilon
 
     @staticmethod
     cdef vec3 from_cvec(vec3_f cvec):
@@ -61,7 +59,7 @@ cdef class vec3:
 
         cdef double w = res.x*r1.w + res.y*r2.w + res.z*r3.w + r4.w
 
-        if (abs(w) > self.epsilon):
+        if (abs(w) > self.cvec.epsilon):
             ret /= w
 
         return ret
@@ -262,16 +260,21 @@ cdef class vec3:
         def __get__(self):
             return self.cvec.length()
 
+    property epsilon:
+        "-"
+        def __get__(self):
+            return self.cvec.epsilon
+
     def normalized(vec3 self):
         '''Return a normalized copy of this vector'''
-        if self.length <= self.epsilon:
-            raise ZeroDivisionError("divide by zero");
+        if self.cvec.length() <= self.cvec.epsilon:
+            raise ZeroDivisionError("length <= epsilon")
         return vec3.from_cvec(self.cvec.normalize())
 
     def normalize(self):
         '''Normalize this vector'''
-        if self.length <= self.epsilon:
-            raise ZeroDivisionError("divide by zero");
+        if self.cvec.length() <= self.cvec.epsilon:
+            raise ZeroDivisionError("length <= epsilon")
         self.cvec.normalize(self.cvec)
         return self
 

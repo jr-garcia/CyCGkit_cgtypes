@@ -238,11 +238,6 @@ cdef class vec4:
         def __set__(self, value):
            self.cvec.w = value
 
-    property epsilon:
-       "-"
-       def __get__(self):
-           return vec3_f().epsilon
-
     property length:
         "-"
         def __get__(self):

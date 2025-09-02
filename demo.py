@@ -170,6 +170,16 @@ v /= 2
 print('\n###################################   MAT 3   ###################################')
 from cycgkit.cgtypes import mat3
 
+from math import pi
+
+R = mat3()
+axis = vec3(0,0,1)
+point = vec3(1,0,0)
+
+R.setRotation(pi/4.0, axis) #45 degrees around z axis
+point=R*point
+print(point)  #The result is <0.707107,0.707107,0>
+
 m = mat3([0, 1, 2])
 print(m)
 m = mat3(vec3(0, 1, 2), vec3(3, 4, 5), vec3(6, 7, 8))
@@ -300,7 +310,7 @@ print('get Diag as (a, b, c):', m.getDiag())
 print('Get value \'at\' [2,0]:', m.at(2, 0))
 print(m[2, 0])
 print('get rotation ZXY:', m.getRotationZXY())
-print('set rotation:\n', m.rotation(10, vec3(10, 20, 0.6)))
+print('set rotation:\n', m.setRotation(10, vec3(10, 20, 0.6)))
 m.setRotationXYZ(0, 1, 2)
 print('set rotation XYZ:\n', m)
 print('mat from.. to.. rotation:\n', mat3.fromToRotation(vec3(0, 0, 20), vec3(10, 0, 0)))

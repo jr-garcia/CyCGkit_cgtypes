@@ -20,57 +20,64 @@ cdef class quat:
 
         if argLen == 0:
             # no arguments
-            self.cvec = quat_f()
+            self.cquat = quat_f()
         elif otype is quat:
             # copy from quat
-            self.cvec = (<quat>args[0]).cvec
+            self.cquat = (<quat>args[0]).cquat
         elif 'numpy.ndarray' in str(otype):
             # from numpy array
             if args[0].ndim == 1:
-                self.cvec = quat_f(args[0], args[1], args[2], args[3])
+                self.cquat = quat_f(args[0], args[1], args[2], args[3])
             else:
                 raise TypeError('for quaternions, Numpy arrays should be 1-D')
         elif otype is vec4:
             # from vec4
             if argLen == 1:
                 # 1 vec
-                self.cvec = quat_f((<vec4>args[0]).cvec[0], (<vec4>args[0]).cvec[1],
+                self.cquat = quat_f((<vec4>args[0]).cvec[0], (<vec4>args[0]).cvec[1],
                                    (<vec4>args[0]).cvec[2], (<vec4>args[0]).cvec[3])
             else:
                 raise TypeError('Wrong number of arguments. Expected 1 vec4 got {}'.format(len(args)))
         elif argLen == self.items:
             # from 4 explicit doubles or ints
-            self.cvec = self.cvec = quat_f(args[0], args[1], args[2], args[3])
+            self.cquat = self.cquat = quat_f(args[0], args[1], args[2], args[3])
         elif argLen == 1 and type(args[0]) in [int, float]:
             # from 1 repeated double or int
-            self.cvec = quat_f(<double>args[0])
+            self.cquat = quat_f(<double>args[0])
         elif argLen == 1 and otype is list:
             # from list with unknown stuff inside
-            self.cvec = quat(*args[0]).cvec
+            self.cquat = quat(*args[0]).cquat
         else:
             raise TypeError('Wrong number/type of arguments. Expected one of the following:\n{}\ngot {} {}'.format(
                 '\n'.join(['- ' + str(s) for s in _supported_]), argLen, otype))
 
     @staticmethod
-    cdef quat from_cvec(quat_f cvec):
+    cdef quat from_cquat(quat_f cquat):
         cdef quat res = quat()
-        res.cvec = cvec
+        res.cquat = cquat
         return res
 
     def __mul__(self, other):
         cdef quat_f res
-        cdef type stype = type(self)
         cdef type otype = type(other)
-        if stype == quat and otype in [float, int]:
-            res = <quat_f&>self.cvec * <double>other
-        elif stype == quat and otype == quat:
-            res = <quat_f&>other.cvec * <quat_f&>self.cvec
-        if otype in [float, int] and otype == quat:
-            res = (<quat_f&>self.cvec).mul(<double>other, <quat_f&>self.cvec)
+        if otype in [float, int]:
+            res = <quat_f&>self.cquat * <double>other
+        elif otype == quat:
+            res = (<quat_f&>self.cquat) * (<quat_f&>(<quat>other).cquat)
         else:
             raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(quat, otype))
 
-        return quat.from_cvec(res)
+        return quat.from_cquat(res)
+
+    def __rmul__(self, other):
+        cdef quat_f res
+        cdef type otype = type(other)
+        if otype in [float, int]:
+            res = (<quat_f&>self.cquat).mul(<double>other, <quat_f&>self.cquat)
+        else:
+            raise TypeError("unsupported operand type(s) for *: \'{}\' and \'{}\'".format(otype, quat))
+
+        return quat.from_cquat(res)
 
     def __truediv__(quat self, other not None):
         cdef quat_f res
@@ -81,8 +88,8 @@ cdef class quat:
             if other == 0:
                 raise ZeroDivisionError("can't divide by 0")
             else:
-                res = (<quat_f&>(self).cvec) / (<const double>other)
-                return quat.from_cvec(res)
+                res = (<quat_f&>(self).cquat) / (<const double>other)
+                return quat.from_cquat(res)
         else:
             raise TypeError("unsupported operand type(s) for /: \'{}\' and \'{}\'".format(quat, otype))
 
@@ -91,7 +98,7 @@ cdef class quat:
 
     def __neg__(self):
         cdef quat res = quat()
-        res.cvec = -(<quat_f>self.cvec)
+        res.cquat = -(<quat_f>self.cquat)
         return res
 
     def __sub__(self, other not None):
@@ -99,8 +106,8 @@ cdef class quat:
         cdef quat_f res
         cdef type otype = type(other)
         if otype is quat:
-            res = (<quat_f&>(<quat>self).cvec) - (<quat_f&>(<quat>other).cvec)
-            return quat.from_cvec(res)
+            res = (<quat_f&>(<quat>self).cquat) - (<quat_f&>(<quat>other).cquat)
+            return quat.from_cquat(res)
         else:
             raise TypeError("unsupported operand type(s) for -: \'{}\' and \'{}\'".format(quat, otype))
 
@@ -109,8 +116,8 @@ cdef class quat:
         cdef quat_f res
         cdef type otype = type(other)
         if otype is quat:
-            res = (<quat_f&>(<quat>self).cvec) + (<quat_f&>(<quat>other).cvec)
-            return quat.from_cvec(res)
+            res = (<quat_f&>(<quat>self).cquat) + (<quat_f&>(<quat>other).cquat)
+            return quat.from_cquat(res)
         else:
             raise TypeError("unsupported operand type(s) for +: \'{}\' and \'{}\'".format(quat, otype))
 
@@ -121,9 +128,9 @@ cdef class quat:
         elif f == 1:
             op = '<='
         if f == 2:
-            return self.cvec == other.cvec
+            return self.cquat == other.cquat
         elif f == 3:
-            return self.cvec != other.cvec
+            return self.cquat != other.cquat
         elif f == 4:
             op = '>'
         elif f == 5:
@@ -137,7 +144,7 @@ cdef class quat:
     def __getitem__(self, object index):
         cdef type otype = type(index)
         if otype is int or otype is slice:
-            return [self.cvec.w, self.cvec.x, self.cvec.y, self.cvec.z][index]
+            return [self.cquat.w, self.cquat.x, self.cquat.y, self.cquat.z][index]
         else:
             raise TypeError('an integer is required')
 
@@ -160,21 +167,21 @@ cdef class quat:
             raise TypeError('an integer is required')
         for r in its:
             if r == 0:
-                self.cvec.w = value
+                self.cquat.w = value
             elif r == 1:
-                self.cvec.x = value
+                self.cquat.x = value
             elif r == 2:
-                self.cvec.y = value
+                self.cquat.y = value
             elif r == 3:
-                self.cvec.z = value
+                self.cquat.z = value
             else:
                 raise IndexError(r)
 
     def __repr__(self):
-        cdef double wf = round(self.cvec.w, 3)
-        cdef double xf = round(self.cvec.x, 3)
-        cdef double yf = round(self.cvec.y, 3)
-        cdef double zf = round(self.cvec.z, 3)
+        cdef double wf = round(self.cquat.w, 3)
+        cdef double xf = round(self.cquat.x, 3)
+        cdef double yf = round(self.cquat.y, 3)
+        cdef double zf = round(self.cquat.z, 3)
         cdef object w, x, y, z
         w = int(wf) if int(wf) == round(wf, 3) else round(wf, 3)
         x = int(xf) if int(xf) == round(xf, 3) else round(xf, 3)
@@ -188,114 +195,125 @@ cdef class quat:
     property cSize:
         "Size in memory of c native elements"
         def __get__(self):
-            return sizeof(self.cvec)
+            return sizeof(self.cquat)
 
     property w:
         "-"
         def __get__(self):
-            return self.cvec.w
+            return self.cquat.w
 
         def __set__(self, value):
-           self.cvec.w = value
+           self.cquat.w = value
 
     property x:
         "-"
         def __get__(self):
-            return self.cvec.x
+            return self.cquat.x
 
         def __set__(self, value):
-            self.cvec.x = value
+            self.cquat.x = value
 
     property y:
        "-"
        def __get__(self):
-           return self.cvec.y
+           return self.cquat.y
 
        def __set__(self, value):
-           self.cvec.y = value
+           self.cquat.y = value
 
     property z:
        "-"
        def __get__(self):
-           return self.cvec.z
+           return self.cquat.z
 
        def __set__(self, value):
-           self.cvec.z = value
+           self.cquat.z = value
 
     ########################  QUAT METHODS  ########################
 
     def __abs__(quat self):
-        return self.cvec.abs()
+        return self.cquat.abs()
 
     def normalized(quat self):
         '''Return a normalized copy of this quaternion'''
         if self.length <= self.epsilon:
             raise ZeroDivisionError("divide by zero");
-        return quat.from_cvec(self.cvec.normalize())
+        return quat.from_cquat(self.cquat.normalize())
 
     def normalize(quat self):
         '''Normalize this quaternion'''
         if self.length <= self.epsilon:
             raise ZeroDivisionError("divide by zero");
-        self.cvec.normalize(self.cvec)
+        self.cquat.normalize(self.cquat)
+        return self
 
     def dot(quat self, quat q):
-        return self.cvec.dot(q.cvec)
+        return self.cquat.dot(q.cquat)
 
     def conjugated(quat self):
         '''Returns a copy of this quat conjugate'''
-        return quat.from_cvec(self.cvec.conjugate())
+        return quat.from_cquat(self.cquat.conjugate())
 
     def conjugate(quat self):
         '''Conjugate this quat in place'''
-        self.cvec.conjugate(self.cvec)
+        self.cquat.conjugate(self.cquat)
+        return self
 
-    def inversed(quat self):
+    def inverted(quat self):
         '''Returns a copy of this quat inverse'''
-        return quat.from_cvec(self.cvec.inverse())
+        return quat.from_cquat(self.cquat.inverse())
 
     def inverse(quat self):
         '''Invert this quat in place'''
-        self.cvec.inverse(self.cvec)
+        self.cquat.inverse(self.cquat)
+        return self
 
-    @staticmethod
-    def fromMat(anymat mat):
-        cdef quat_f res = quat_f()
-        return quat.from_cvec(res.fromMat(mat.cmat))
+    def fromMat(quat self, anymat mat):
+        self.cquat.fromMat(mat.cmat)
+        return self
 
     def toMat3(quat self):
-        cdef mat3_f ret = self.cvec.toMat3()
+        cdef mat3_f ret = self.cquat.toMat3()
         return mat3.from_cmat(ret)
 
     def toMat4(quat self):
-        cdef mat4_f ret = self.cvec.toMat4()
+        cdef mat4_f ret = self.cquat.toMat4()
         return mat4.from_cmat(ret)
 
     def toAngleAxis(quat self):
         cdef double angle = 0
         cdef vec3_f axis
-        self.cvec.toAngleAxis(angle, axis)
+        self.cquat.toAngleAxis(angle, axis)
         return angle, vec3.from_cvec(axis)
 
-    @staticmethod
-    def fromAngleAxis(double angle, vec3 axis):
-        cdef quat_f res = quat_f()
-        return quat.from_cvec(res.fromAngleAxis(angle, axis.cvec))
+    def fromAngleAxis(quat self, double angle, vec3 axis):
+        self.cquat.fromAngleAxis(angle, axis.cvec)
+        return self
 
-    def log(quat self):
-        return quat.from_cvec(self.cvec.log())
+    def log(quat self, bint inplace=False):
+        if inplace:
+            self.cquat.log(self.cquat)
+            return self
+        else:
+            return quat.from_cquat(self.cquat.log())
 
-    def exp(quat self):
-        return quat.from_cvec(self.cvec.exp())
+    def exp(quat self, bint inplace=False):
+        if inplace:
+            self.cquat.exp(self.cquat)
+            return self
+        else:
+            return quat.from_cquat(self.cquat.exp())
 
     def rotateVec(quat self, vec3 v):
-        return vec3.from_cvec(self.cvec.rotateVec(v.cvec))
+        return vec3.from_cvec(self.cquat.rotateVec(v.cvec))
 
     def __hash__(self):
         return hash(repr(self))
 
+
 def slerp(double t, quat q0, quat q1, bint shortest=False):
-    return quat.from_cvec(qu.slerp(t, q0.cvec, q1.cvec, shortest))
+    return quat.from_cquat(qu.slerp(t, q0.cquat, q1.cquat, shortest))
+
 
 def squad(double t, quat a, quat b,quat c, quat d):
-    return quat.from_cvec(qu.squad(t, a.cvec, b.cvec, c.cvec, d.cvec))
+    return quat.from_cquat(qu.squad(t, a.cquat, b.cquat, c.cquat, d.cquat))

@@ -16,9 +16,9 @@ from .mat3 cimport mat3
 from .mat4 cimport mat4
 
 cdef class quat:
-    cdef quat_f cvec
+    cdef quat_f cquat
     cdef unsigned short items
     cdef double epsilon
 
     @staticmethod
-    cdef quat from_cvec(quat_f cvec)
+    cdef quat from_cquat(quat_f cquat)

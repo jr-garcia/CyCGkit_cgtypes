@@ -304,6 +304,7 @@ cdef class mat3:
         if inplace:
             self.checkViews()
             self.cmat.ortho(self.cmat)
+            return self
         else:
             return mat3.from_cmat(self.cmat.ortho())
 
@@ -360,34 +361,44 @@ cdef class mat3:
     def setIdentity(mat3 self):
         self.checkViews()
         self.cmat.setIdentity()
+        return self
 
     def setRow(mat3 self, short row, *args):
+        cdef double a, b, c, d
         self.checkViews()
         if len(args) == 3 and all(type(arg) in [float, int] for arg in args):
             a, b, c = args
             self.cmat.setRow(row, a, b, c)
+            return self
         elif len(args) == 1 and isinstance(args[0], vec3):
             self.cmat.setRow(row, (<vec3>args[0]).cvec)
+            return self
         else:
-            raise TypeError("Invalid arguments")
+            raise TypeError("setRow() takes either a vec3 or 3 floats.")
 
     def setColumn(mat3 self, short col, *args):
+        cdef double a, b, c
         self.checkViews()
         if len(args) == 3 and all((isinstance(arg, int) or isinstance(arg, float)) for arg in args):
             a, b, c = args
             self.cmat.setColumn(col, a, b, c)
+            return self
         elif len(args) == 1 and isinstance(args[0], vec3):
             self.cmat.setColumn(col, (<vec3>args[0]).cvec)
+            return self
         else:
-            raise TypeError("Invalid arguments")
+            raise TypeError("setColumn() takes either a vec3 or 3 floats.")
 
     def setDiag(mat3 self, *args):
+        cdef double a, b, c
         self.checkViews()
         if len(args) == 3 and all((isinstance(arg, int) or isinstance(arg, float)) for arg in args):
             a, b, c = args
             self.cmat.setDiag(a, b, c)
+            return self
         elif len(args) == 1 and isinstance(args[0], vec3):
             self.cmat.setDiag((<vec3>args[0]).cvec)
+            return self
         else:
             raise TypeError("Invalid arguments")
 
@@ -418,37 +429,42 @@ cdef class mat3:
             self.cmat.getDiag(a, b, c)
             return a, b, c
 
-    @staticmethod
-    def rotation(double angle, vec3 axis):
-        cdef mat3 res = mat3()
-        res.cmat.setRotation(angle, axis.cvec)
-        return res
+    def setRotation(mat3 self, double angle, vec3 axis):
+        self.checkViews()
+        self.cmat.setRotation(angle, axis.cvec)
+        return self
 
     def setRotationZXY(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationZXY(x, y, z)
+        return self
 
     def setRotationYXZ(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationYXZ(x, y, z)
+        return self
 
     def setRotationXYZ(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationXYZ(x, y, z)
+        return self
 
     def setRotationXZY(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationXZY(x, y, z)
+        return self
 
     def setRotationYZX(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationYZX(x, y, z)
+        return self
 
     def setRotationZYX(mat3 self, double x, double y, double z):
         self.checkViews()
         self.cmat.setRotationZYX(x, y, z)
+        return self
 
-    cdef tuple getRot(mat3 self, bint a=False, bint b=False, bint c=False, bint d=False, bint e=False, bint f=False):
+    cdef tuple getRotation(mat3 self, bint a=False, bint b=False, bint c=False, bint d=False, bint e=False, bint f=False):
         cdef double x=0, y=0, z=0
         if a:
             self.cmat.getRotationZXY(x, y, z)
@@ -467,28 +483,27 @@ cdef class mat3:
         return x, y, z
 
     def getRotationZXY(self):
-        return self.getRot(a=True)
+        return self.getRotation(a=True)
 
     def getRotationYXZ(self):
-        return self.getRot(a=False, b=True)
+        return self.getRotation(a=False, b=True)
 
     def getRotationXYZ(self):
-        return self.getRot(a=False, b=False, c=True)
+        return self.getRotation(a=False, b=False, c=True)
 
     def getRotationXZY(self):
-        return self.getRot(a=False, b=False, c=False, d=True)
+        return self.getRotation(a=False, b=False, c=False, d=True)
 
     def getRotationYZX(self):
-        return self.getRot(a=False, b=False, c=False, d=False, e=True)
+        return self.getRotation(a=False, b=False, c=False, d=False, e=True)
 
     def getRotationZYX(self):
-        return self.getRot(a=False, b=False, c=False, d=False, e=False, f=True)
+        return self.getRotation(a=False, b=False, c=False, d=False, e=False, f=True)
 
-    @staticmethod
-    def fromToRotation(vec3 from_, vec3 to):
-        cdef mat3 res = mat3()
-        res.cmat.fromToRotation(from_.cvec, to.cvec)
-        return res
+    def fromToRotation(mat3 self, vec3 from_, vec3 to):
+        self.checkViews()
+        self.cmat.fromToRotation(from_.cvec, to.cvec)
+        return self
 
     @staticmethod
     def scaling(vec3 scale):
@@ -497,10 +512,16 @@ cdef class mat3:
         res.cmat.setScaling(scale.cvec)
         return res
 
+    def setScaling(mat3 self, vec3 scale):
+      '''Set this matrix to "scale"'''
+      self.checkViews()
+      self.cmat.setScaling(scale.cvec)
+      return self
+
     def determinant(mat3 self):
         return self.cmat.determinant()
 
-    def inversed(mat3 self):
+    def inverted(mat3 self):
         '''Returns a copy of this matrix inverse'''
         return mat3.from_cmat(self.cmat.inverse())
 
@@ -579,22 +600,22 @@ cdef class mat3:
         return res
 
     def toEulerZXY(self):
-        return self.getRot(a=True)
+        return self.getRotation(a=True)
 
     def toEulerYXZ(self):
-        return self.getRot(a=False, b=True)
+        return self.getRotation(a=False, b=True)
 
     def toEulerXYZ(self):
-        return self.getRot(a=False, b=False, c=True)
+        return self.getRotation(a=False, b=False, c=True)
 
     def toEulerXZY(self):
-        return self.getRot(a=False, b=False, c=False, d=True)
+        return self.getRotation(a=False, b=False, c=False, d=True)
 
     def toEulerYZX(self):
-        return self.getRot(a=False, b=False, c=False, d=False, e=True)
+        return self.getRotation(a=False, b=False, c=False, d=False, e=True)
 
     def toEulerZYX(self):
-        return self.getRot(a=False, b=False, c=False, d=False, e=False, f=True)
+        return self.getRotation(a=False, b=False, c=False, d=False, e=False, f=True)
 
     def __hash__(self):
         return hash(repr(self))

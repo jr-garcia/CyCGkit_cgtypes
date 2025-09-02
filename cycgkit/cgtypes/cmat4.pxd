@@ -42,7 +42,7 @@ cdef extern from "mat4.h" namespace 'support3d' nogil:
         mat4[T]& setOrthographic(T left, T right, T bottom, T top, T nearval, T farval);
         mat4[T]& setFrustum(T left, T right, T bottom, T top, T near_, T far_);
         mat4[T]& setPerspective(T fovy, T aspect, T near_, T far_);
-        #mat4[T]& setLookAt(const vec3[T]& pos, const vec3[T]& target, const vec3[T]& up=vec3[T](0,0,1));
+        mat4[T]& setLookAt(const vec3[T]& pos, const vec3[T]& target, const vec3[T]& up);
         mat4[T]& setMat3(const mat3[T]& m3);
         mat3[T]  getMat3() const;
         mat3[T]& getMat3(mat3[T]& dest) const;

@@ -90,7 +90,7 @@ class TestCyCgKitTypes(unittest.TestCase):
 
     def test_mat3_transformations(self):
         # Rotation
-        rotation = mat3.rotation(10, vec3(10, 20, 0.6))
+        rotation = mat3().setRotation(10, vec3(10, 20, 0.6))
         self.assertIsInstance(rotation, mat3)
 
         # Scaling
@@ -106,8 +106,13 @@ class TestCyCgKitTypes(unittest.TestCase):
         self.assertIsInstance(slerp_result, quat)
 
         # Quaternion from matrix
-        q_from_mat = quat.fromMat(mat3(1.4))
+        rot_mat = mat3()
+        rot_mat.setRotation(3.1415 / 4, vec3(0, 1, 0))
+        q_from_mat = quat()
+        q_from_mat.fromMat(rot_mat)
         self.assertIsInstance(q_from_mat, quat)
+        new_mat = q_from_mat.toMat3()
+        self.assertEqual(new_mat, rot_mat)
 
     def test_error_handling(self):
         # Test type errors and division errors

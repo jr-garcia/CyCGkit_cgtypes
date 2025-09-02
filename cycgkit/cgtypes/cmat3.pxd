@@ -92,7 +92,7 @@ cdef extern from "mat3.h" namespace 'support3d' nogil:
         mat3[T]& scale(const vec3[T]& s)
         mat3[T]& rotate(T angle, const vec3[T]& axis)
 
-        mat3[T]& ortho(mat3[T]& dest) const
         mat3[T] ortho() const
+        mat3[T]& ortho(mat3[T]& dest) const
 
         void decompose(mat3[T]& rot, vec3[T]& scale) const

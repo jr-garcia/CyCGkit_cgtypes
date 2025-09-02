@@ -31,4 +31,4 @@ cdef class mat3:
 
     cdef checkViews(self)
 
-    cdef tuple getRot(mat3 self, bint a=*, bint b=*, bint c=*, bint d=*, bint e=*, bint f=*)
+    cdef tuple getRotation(mat3 self, bint a=*, bint b=*, bint c=*, bint d=*, bint e=*, bint f=*)

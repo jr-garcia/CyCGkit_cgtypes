@@ -16,7 +16,6 @@ from .mat4 cimport mat4
 cdef class vec3:
     cdef vec3_f cvec
     cdef unsigned short items
-    cdef readonly double epsilon
 
     @staticmethod
     cdef vec3 from_cvec(vec3_f cvec)
