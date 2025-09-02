@@ -245,14 +245,10 @@ cdef class vec4:
 
     def normalized(vec4 self):
         '''Return a normalized copy of this vector'''
-        if self.length <= self.epsilon:
-            raise ZeroDivisionError("divide by zero");
         return vec4.from_cvec(self.cvec.normalize())
 
     def normalize(vec4 self):
         '''Normalize this vector'''
-        if self.length <= self.epsilon:
-            raise ZeroDivisionError("divide by zero");
         self.cvec.normalize(self.cvec)
         return self
 
