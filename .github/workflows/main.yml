@@ -37,11 +37,13 @@ jobs:
           architecture: ${{ env.VARSARG }}
       - name: Update Pip
         run: python -m pip install --upgrade pip
+      - name: Downgrade setuptools to avoid Pypy error
+        run: python -m pip install "setuptools==72.1.0"
       - name: Install project
         run: pip -v install ${{ github.workspace }}
       - name: Install test deps
         run: |
-          if [ "\){{ matrix.python-version }}" = "3.8" ]; then
+          if [ "${{ matrix.python-version }}" = "3.8" ]; then
             python -m pip install numpy==1.24.4
           else
             python -m pip install numpy==2.2.6
