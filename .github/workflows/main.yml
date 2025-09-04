@@ -46,8 +46,8 @@ jobs:
       - name: Install project
         run: pip -v install ${{ github.workspace }}
       - name: Test
-          run:  python -m unittest test_basic
-          working-directory: ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
+        run:  python -m unittest test_basic
+        working-directory: ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
       # - name: Test
       #   env:
       #     PYTHONPATH: ${{ github.workspace }}
