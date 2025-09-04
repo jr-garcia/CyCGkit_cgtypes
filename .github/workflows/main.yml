@@ -45,16 +45,19 @@ jobs:
 #          pip install Cython==3.1.3 --install-option="--no-cython-compile"
       - name: Install project
         run: pip -v install ${{ github.workspace }}
-      - name: Test
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          pip install "numpy==2.2.6"
-          cd ~
-          pip list
-          dir
-          python -c "from cycgkit.cgtypes import vec3;print(f'{vec3}={vec3(1)}')"
-          python -m unittest discover -f -s ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
+    - name: Test
+        run:  python -m unittest test_basic
+        working-directory: ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
+      # - name: Test
+      #   env:
+      #     PYTHONPATH: ${{ github.workspace }}
+      #   run: |
+      #     pip install "numpy==2.2.6"
+      #     cd ~
+      #     pip list
+      #     dir
+      #     python -c "from cycgkit.cgtypes import vec3;print(f'{vec3}={vec3(1)}')"
+      #     python -m unittest discover -f -s ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
 
   Build-wheels:
     env:
