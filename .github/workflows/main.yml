@@ -40,12 +40,12 @@ jobs:
       - name: Install project
         run: pip -v install ${{ github.workspace }}
       - name: Install test deps
-         run: |
-              if [ "\){{ matrix.python-version }}" = "3.8" ]; then
-                python -m pip install numpy==1.24.4
-              else
-                python -m pip install numpy==2.2.6
-              fi
+        run: |
+          if [ "\){{ matrix.python-version }}" = "3.8" ]; then
+            python -m pip install numpy==1.24.4
+          else
+            python -m pip install numpy==2.2.6
+          fi
         shell: bash
       - name: Test
         working-directory: ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
