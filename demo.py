@@ -34,7 +34,7 @@ print('vec3.cross(a, b):', vec3.cross(vec3(1, 2, 3), v))
 try:
     print(v * 'g')
 except TypeError as t:
-    print(t)
+    print(f"Expected Exception {t}")
 
 print('Divide')
 print(v / 53.0)
@@ -42,15 +42,15 @@ print(v / 3)
 try:
     print(3 / v)
 except Exception as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 try:
     vec3(0, 0, 0) / 0
 except Exception as t:
-    print('Divide by 0: Exception \'{}\''.format(t))
+    print('Expected Exception Divide by 0 \'{}\''.format(t))
 try:
     print('divide', v / v)
 except TypeError as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 
 print('modulo %')
 print(v % v)
@@ -119,7 +119,7 @@ print('Dot product:', v * v)
 try:
     print(v * 'g')
 except TypeError as t:
-    print(t)
+    print(f"Expected Exception: {t}")
 
 print('Divide')
 print(v / 53.0)
@@ -127,15 +127,15 @@ print(v / 3)
 try:
     print(3 / v)
 except Exception as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 try:
     vec3(0, 0, 0) / 0
 except Exception as t:
-    print('Divide by 0: Exception \'{}\''.format(t))
+    print('Expected Exception Divide by 0 \'{}\''.format(t))
 try:
     print('divide', v / v)
 except TypeError as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 
 print('modulo %')
 print(v % v)
@@ -219,7 +219,7 @@ print('Dot product:\n', m * m)
 try:
     print(m * 'g')
 except TypeError as t:
-    print(t)
+    print(f"Expected Exception {t}")
 
 print('Divide', m)
 print(m / 53.0, '\n')
@@ -227,15 +227,15 @@ print(m / 3)
 try:
     print(3 / m)
 except TypeError as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 try:
     m / 0
 except ZeroDivisionError as t:
-    print('Divide by 0: Exception \'{}\''.format(t))
+    print('Expected Exception Divide by 0 \'{}\''.format(t))
 try:
     print('divide', m / m)
 except TypeError as t:
-    print('Exception \'{}\''.format(t))
+    print('Expected Exception \'{}\''.format(t))
 
 print('modulo %')
 print(m % m, '\n')
@@ -250,7 +250,7 @@ print('not equal (true): ', m != mat3(2))
 try:
     m > mat3(1)
 except TypeError as ex:
-    print('greater (exception):', ex)
+    print(f'Expected Exception (greater): {ex}')
 # print('ortho:', m.ortho())
 print('mat3 memory size:', m.__sizeof__())
 print('cgckit c-mat3 memory size: {} (9 doubles of size 8 each)'.format(m.cSize))
@@ -268,7 +268,7 @@ if hasNumpy:
         arr = asarray(m)
         m[2] = vec3(0)
     except ValueError as ex:
-        print('Exception if changing while viewed:', ex)
+        print(f'Expected Exception Exception if changing while viewed: {ex}')
     finally:
         arr = None
 
@@ -313,7 +313,7 @@ print('get rotation ZXY:', m.getRotationZXY())
 print('set rotation:\n', m.setRotation(10, vec3(10, 20, 0.6)))
 m.setRotationXYZ(0, 1, 2)
 print('set rotation XYZ:\n', m)
-print('mat from.. to.. rotation:\n', mat3.fromToRotation(vec3(0, 0, 20), vec3(10, 0, 0)))
+print('mat from.. to.. rotation:\n', mat3().fromToRotation(vec3(0, 0, 20), vec3(10, 0, 0)))
 print('set scaling = 10:\n', mat3.scaling(vec3(10, 10, 10)))
 m = mat3(1)
 m.rotate(20, vec3(10, 20, 0.6))
@@ -336,6 +336,6 @@ from cycgkit.cgtypes.quat import slerp, squad
 
 q = quat()
 print('empty:', q)
-print('from mat3:', quat.fromMat(mat3(1.4)))
+print('from mat3:', quat().fromMat(mat3(1.4)))
 print('slerp:', slerp(.222, q, quat(123)))
 print('squad:', squad(.222, q, quat(123), quat(.005), quat(900)))
