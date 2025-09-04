@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version:  [ 3.8, "3.10", "3.12", "pypy-3.8" ]
+        python-version:  [ 3.8, "3.10", "3.12", "pypy-3.9" ]
         os:  [ windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     if: ${{endsWith(github.ref,'ci_test') || endsWith(github.ref,'master')}}
@@ -40,7 +40,13 @@ jobs:
       - name: Install project
         run: pip -v install ${{ github.workspace }}
       - name: Install test deps
-        run: pip install numpy==2.2.6
+         run: |
+              if [ "\){{ matrix.python-version }}" = "3.8" ]; then
+                python -m pip install numpy==1.24.4
+              else
+                python -m pip install numpy==2.2.6
+              fi
+        shell: bash
       - name: Test
         working-directory: ${{ github.workspace }}${{ steps.sepdet.outputs.value }}tests
         run:  python -m unittest test_basic
