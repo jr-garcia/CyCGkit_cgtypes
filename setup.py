@@ -15,12 +15,14 @@ if opt:
 
 incl = ['./include']
 extra_compile = []
+extra_link_args = []
 
 if platform == 'win32':
     rldirs = []
     extra_compile.append('/EHsc')
 elif platform == 'darwin':
     rldirs = []
+    extra_link_args.append("-Wl,-Bsymbolic-functions")
 else:
     rldirs = ["$ORIGIN"]
     extra_compile.extend(["-w", "-Ofast", '-std=c++14'])
@@ -79,11 +81,13 @@ setup(
                       include_dirs=incl,
                       runtime_library_dirs=rldirs,
                       extra_compile_args=extra_compile,
+                      extra_link_args=extra_link_args,
                       language="c++"),
             Extension('cycgkit.boundingbox', ["cycgkit/boundingbox.pyx", './src/boundingbox.cpp', './src/vec3.cpp'],
                       include_dirs=incl,
                       runtime_library_dirs=rldirs,
                       extra_compile_args=extra_compile,
+                      extra_link_args=extra_link_args,
                       language="c++")
         ],
             compiler_directives={
