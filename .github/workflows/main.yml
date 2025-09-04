@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version:  [ 3.8, "3.10", "3.12", "3.13", "pypy-3.10", 'graalpy-24.0', '3.13t' ]
+        python-version:  [ 3.8, "3.10", "3.12", "3.13", "pypy-3.10", '3.13t' ]
         os:  [ windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     if: ${{endsWith(github.ref,'ci_test') || endsWith(github.ref,'master')}}
@@ -30,6 +30,12 @@ jobs:
           if_false: '/'
       - name: Checkout repo
         uses: actions/checkout@v5
+      - name: MacPy38 workaround
+        if: ${{ contains(matrix.os, 'mac') }} && (${{ matrix.python-version == '3.8' }} || ${{ matrix.python-version == '3.10' }})
+        run: |
+          brew uninstall --ignore-dependencies gettext --force
+          brew install gettext
+        shell: bash
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -37,12 +43,6 @@ jobs:
           architecture: ${{ env.VARSARG }}
       - name: Update Pip
         run: python -m pip install --upgrade pip
-      - name: MacPy38 workaround
-        if: ${{ contains(matrix.os, 'mac') }}
-        run: |
-          brew uninstall gettext --force
-          brew install gettext
-        shell: bash
       - name: Downgrade setuptools to avoid Pypy error
         run: python -m pip install "setuptools==72.1.0"
       - name: Install project
