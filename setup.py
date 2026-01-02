@@ -23,6 +23,8 @@ if platform == 'win32':
 elif platform == 'darwin':
     rldirs = []
     extra_link_args.append("-Wl")
+    if platform.python_implementation() == 'PyPy':
+        extra_link_args = [arg for arg in extra_link_args if arg != '-Bsymbolic-functions']
 else:
     rldirs = ["$ORIGIN"]
     extra_compile.extend(["-w", "-Ofast", '-std=c++14'])
