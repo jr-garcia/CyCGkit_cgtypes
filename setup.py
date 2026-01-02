@@ -22,7 +22,7 @@ if platform == 'win32':
     extra_compile.append('/EHsc')
 elif platform == 'darwin':
     rldirs = []
-    extra_link_args.append("-Wl,-Bsymbolic-functions")
+    extra_link_args.append("-Wl")
 else:
     rldirs = ["$ORIGIN"]
     extra_compile.extend(["-w", "-Ofast", '-std=c++14'])
