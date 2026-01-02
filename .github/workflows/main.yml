@@ -39,12 +39,10 @@ jobs:
               brew install gettext
           fi
         shell: bash
-      - name: Install Clang for PyPy on macOS
+      - name: Fix for PyPy on macOS
         if: matrix.os == 'macos-latest' && startsWith(matrix.python-version, 'pypy')
         run: |
-          brew update
-          brew install llvm
-          ln -s /usr/local/opt/llvm/bin/* /usr/local/bin/
+          export LDFLAGS="-Wl,--no-bsymbolic-functions"
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
