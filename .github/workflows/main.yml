@@ -35,9 +35,16 @@ jobs:
         run: |
           if [[ "${{ matrix.os }}" == *"mac"* ]]; then
               brew uninstall --ignore-dependencies gettext --force
+              brew update
               brew install gettext
           fi
         shell: bash
+      - name: Install Clang for PyPy on macOS
+        if: matrix.os == 'macos-latest' && startsWith(matrix.python-version, 'pypy')
+        uses: egor-tensin/setup-clang@v2
+        with:
+          version: latest
+          platform: x64
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
