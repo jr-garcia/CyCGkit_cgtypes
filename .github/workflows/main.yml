@@ -19,7 +19,7 @@ jobs:
         python-version:  [ 3.8, "3.10", "pypy-3.10"] # "3.12", "3.13", '3.13t' ,
         os:  [macos-latest] #windows-latest, ubuntu-latest,
     runs-on: ${{ matrix.os }}
-    if: ${{endsWith(github.ref,'ci_test') || endsWith(github.ref,'master') #&& !(matrix.os == 'macos-latest' && startsWith(matrix.python-version, 'pypy'))}}
+    if: ${{endsWith(github.ref,'ci_test') || endsWith(github.ref,'master')}} #&& !(matrix.os == 'macos-latest' && startsWith(matrix.python-version, 'pypy'))}}
     steps:
       - name: Determine separator
         uses: haya14busa/action-cond@v1
