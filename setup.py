@@ -1,6 +1,6 @@
 from setuptools import Extension, setup
 from Cython.Build import cythonize
-from sys import platform
+from sys import platform, implementation
 
 from distutils.sysconfig import get_config_vars
 import os
@@ -23,7 +23,8 @@ if platform == 'win32':
 elif platform == 'darwin':
     rldirs = []
     extra_link_args.append("-Wl")
-    if platform.python_implementation() == 'PyPy':
+    print(implementation.name.lower())
+    if implementation.name.lower() == 'pypy':
         extra_link_args = [arg for arg in extra_link_args if arg != '-Bsymbolic-functions']
 else:
     rldirs = ["$ORIGIN"]
