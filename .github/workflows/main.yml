@@ -33,9 +33,9 @@ jobs:
       - name: MacPy38 workaround
         if: (${{ matrix.python-version == '3.8' }} || ${{ matrix.python-version == '3.10' }})
         run: |
-          if [ ${{ contains(matrix.os, 'mac') }} ]; then
-            brew uninstall --ignore-dependencies gettext --force
-            brew install gettext
+          if [[ "${{ matrix.os }}" == *"mac"* ]]; then
+              brew uninstall --ignore-dependencies gettext --force
+              brew install gettext
           fi
         shell: bash
       - name: Set up Python ${{ matrix.python-version }}
