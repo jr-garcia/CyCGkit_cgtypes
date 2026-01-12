@@ -30,15 +30,15 @@ jobs:
           if_false: '/'
       - name: Checkout repo
         uses: actions/checkout@v5
-#      - name: MacPy38 workaround
-#        if: (${{ matrix.python-version == '3.8' }} || ${{ matrix.python-version == '3.10' }})
-#        run: |
-#          if [[ "${{ matrix.os }}" == *"mac"* ]]; then
-#              brew uninstall --ignore-dependencies gettext --force
-#              brew update
-#              brew install gettext
-#          fi
-#        shell: bash
+      - name: MacPy38 workaround
+        if: (${{ matrix.python-version == '3.8' }} || ${{ matrix.python-version == '3.10' }})
+        run: |
+          if [[ "${{ matrix.os }}" == *"mac"* ]]; then
+              brew uninstall --ignore-dependencies gettext --force
+              brew update
+              brew install gettext
+          fi
+        shell: bash
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
