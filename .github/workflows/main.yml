@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ ci_test , build_wheels]
+    branches: [ master, ci_test , build_wheels ]
   pull_request:
     branches: [ master ]
 
@@ -16,8 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version:  [ 3.8, "3.10", "3.12", "3.13", '3.13t']
-        os:  [macos-latest] #windows-latest, ubuntu-latest
+        python-version:  [ 3.8, "3.10", "3.12", "3.13", '3.13t', 'pypy3.11', 'graalpy-25.0.2']
+        os:  [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     if:  (${{endsWith(github.ref, 'ci_test')}} || ${{endsWith(github.ref, 'master')}})
     steps:
@@ -30,13 +30,6 @@ jobs:
           if_false: '/'
       - name: Checkout repo
         uses: actions/checkout@v5
-      - name: MacPy38 workaround
-        run: |
-          if [[ ( "${{ matrix.python-version }}" == "3.8" || "${{ matrix.python-version }}" == "3.10" ) && "${{ matrix.os }}" == "macos-latest" ]]; then
-              brew update
-              brew reinstall gettext
-          fi
-        shell: bash
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
